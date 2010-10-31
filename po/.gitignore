@@ -1,0 +1,9 @@
+.intltool-merge-cache
+Makefile*
+Makevars.template
+POTFILES
+Rules-quot
+*.sed
+*.header
+*.sin
+stamp-it

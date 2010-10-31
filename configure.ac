@@ -11,7 +11,7 @@ AC_PROG_CC
 AC_PROG_CC_STDC
 AM_PROG_VALAC([0.7.0])
 AC_PROG_INSTALL
-AC_PROG_INTLTOOL([0.35])
+IT_PROG_INTLTOOL([0.35])
 
 GOOGLEDOCS2LATEX_PACKAGES="--pkg gtk+-2.0 --pkg gmodule-2.0 --pkg libsoup-2.4"
 PKG_CHECK_MODULES(GOOGLEDOCS2LATEX, [
@@ -29,18 +29,11 @@ AC_SUBST(GETTEXT_PACKAGE)
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.17])
 
-
 AC_CONFIG_FILES([
 	Makefile
 	data/googledocs2latex.desktop.in
 	data/Makefile
 	data/icons/Makefile
-	data/icons/16x16/Makefile
-	data/icons/22x22/Makefile
-	data/icons/24x24/Makefile
-	data/icons/32x32/Makefile
-	data/icons/48x48/Makefile
-	data/icons/scalable/Makefile
 	po/Makefile.in
 	src/Makefile
 	vapi/Makefile
