@@ -18,7 +18,7 @@ public class MainWin : Window
 	public void on_docs_view_row_activated(TreeView source, TreePath path, TreeViewColumn column) { }
 
 	[CCode (instance_pos = -1)]
-	public void on_authenticate(Action action) {
+	public void on_authenticate(Gtk.Action action) {
 		var response = password_dialog.authenticate();
 		if(response != ResponseType.OK)
 			return;
