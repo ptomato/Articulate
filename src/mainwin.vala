@@ -31,7 +31,7 @@ public class MainWin : Window
 		session = new Soup.SessionSync();
 		var message = Soup.form_request_new("POST", 
 			"https://www.google.com/accounts/ClientLogin", 
-			"accountType", "GOOGLE_OR_HOSTED",
+			"accountType", "HOSTED_OR_GOOGLE",
 			"Email", username,
 			"Passwd", password,
 			"service", "writely",
