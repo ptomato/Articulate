@@ -41,15 +41,18 @@ public class MainWin : Window
 		// Display the response status
 		statusbar.push(0, "HTTP status: %u".printf(status));
 		
+		// Parse the response body
+		var response_fields = new HashTable<string, string>(str_hash, str_equal);
+		foreach(var line in message.response_body.flatten().data.split("\n")) {
+			var fields = line.split("=", 2);
+			if(fields[0] != null)
+				response_fields.insert(fields[0], fields[1]);
+		}
+		
 		// Obtain the Auth token
-		try {
-			var regex = new Regex("^Auth=(.*)$", RegexCompileFlags.MULTILINE);
-			MatchInfo match;
-			if(!regex.match(message.response_body.flatten().data, 0, out match))
-				throw new Error(0, 0, "Regex didn't match");
-			authkey = match.fetch(1);
-		} catch(Error e) {
-			warning("Could not obtain Auth token: %s\n", e.message);
+		authkey = response_fields.lookup("Auth");
+		if(authkey == null) {
+			warning("Could not obtain Auth token\n");
 			return;
 		}
 			
