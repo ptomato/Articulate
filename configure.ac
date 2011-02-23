@@ -13,12 +13,11 @@ AM_PROG_VALAC([0.7.0])
 AC_PROG_INSTALL
 IT_PROG_INTLTOOL([0.35])
 
-GOOGLEDOCS2LATEX_PACKAGES="--pkg gtk+-2.0 --pkg gmodule-2.0 --pkg libsoup-2.4 --pkg rest-0.6"
+GOOGLEDOCS2LATEX_PACKAGES="--pkg gtk+-2.0 --pkg gmodule-2.0"
 PKG_CHECK_MODULES(GOOGLEDOCS2LATEX, [
 	gtk+-2.0 >= 2.14.0
 	gmodule-2.0
-	libsoup-2.4
-	rest-0.6
+	rest-0.6  dnl Not in GOOGLEDOCS2LATEX_PACKAGES, as we provide our own VAPI
 ])
 AC_SUBST(GOOGLEDOCS2LATEX_CFLAGS)
 AC_SUBST(GOOGLEDOCS2LATEX_LIBS)

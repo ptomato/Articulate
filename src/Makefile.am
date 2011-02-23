@@ -13,7 +13,7 @@ INCLUDES = \
 	-DPKGLIBDIR=\""$(pkglibdir)"\"
 
 VALAFLAGS = \
-	--vapidir=$(srcdir)/../vapi --pkg config \
+	--vapidir=$(srcdir)/../vapi --pkg config --pkg rest-0.6-mod \
 	@GOOGLEDOCS2LATEX_PACKAGES@
 
 googledocs2latex_LDADD = \
