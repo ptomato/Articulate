@@ -2,8 +2,7 @@ bin_PROGRAMS = googledocs2latex
 
 googledocs2latex_SOURCES = \
 	main.vala \
-	mainwin.vala \
-	passworddialog.vala
+	mainwin.vala
 
 INCLUDES = \
 	-include config.h \
