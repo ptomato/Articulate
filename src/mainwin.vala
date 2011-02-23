@@ -14,14 +14,22 @@ public class MainWin : Window
 
 	[CCode (instance_pos = -1)]
 	public void on_authenticate(Gtk.Action action) {
-		Rest.Proxy oauth = new OAuthProxy("anonymous", "4572616e48616d6d65724c61686176", "https://www.google.com/accounts/OAuthGetRequestToken", false);
-
+		Rest.Proxy oauth = new OAuthProxy("anonymous", "anonymous", "https://www.google.com/accounts/", false);
+		var call = oauth.new_call();
+		call.set_function("OAuthGetRequestToken");
+		call.add_params(
+			"oauth_nonce", "4572616e48616d6d65724c61686176", // FIXME
+			"oauth_signature_method", "HMAC-SHA1",
+			"oauth_signature", "...", // FIXME
+			"oauth_timestamp", "...", // FIXME
+			"scope", "https://docs.google.com/feeds/default/private/full",
+			"oauth_callback", "oob",
+			"xoauth_displayname", "GoogleDocs2LaTeX");
 		try {
-			OAuthProxy.request_token((OAuthProxy)oauth, "", "oob");
+			call.run(null);
 		} catch(Error e) {
 			error("Something went wrong: %s", e.message);
 		}
-
 	}
 
 	// CONSTRUCTOR
