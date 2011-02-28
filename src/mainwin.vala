@@ -14,7 +14,7 @@ public class MainWin : Window
 
 	[CCode (instance_pos = -1)]
 	public void on_authenticate(Gtk.Action action) {
-		Rest.Proxy oauth = new OAuthProxy("anonymous", "anonymous", "https://www.google.com/accounts/", false);
+		Rest.Proxy oauth = new Rest.OAuthProxy("anonymous", "anonymous", "https://www.google.com/accounts/", false);
 		var call = oauth.new_call();
 		call.set_function("OAuthGetRequestToken");
 		call.add_params(
