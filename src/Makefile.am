@@ -2,7 +2,8 @@ bin_PROGRAMS = googledocs2latex
 
 googledocs2latex_SOURCES = \
 	main.vala \
-	mainwin.vala
+	mainwin.vala \
+	sha1.vala
 
 INCLUDES = \
 	-include config.h \
