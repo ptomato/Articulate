@@ -18,7 +18,7 @@ public class MainWin : Window
 		var call = oauth.new_call();
 		call.set_function("OAuthGetRequestToken");
 		call.add_params(
-			"oauth_nonce", "4572616e48616d6d65724c61686176", // FIXME
+			"oauth_nonce", "...", // FIXME
 			"oauth_signature_method", "HMAC-SHA1",
 			"oauth_signature", "...", // FIXME
 			"oauth_timestamp", "...", // FIXME

@@ -1,5 +1,7 @@
 // Taken from sha1.c in a libREST version newer than 0.6.1
 
+namespace Rest {
+
 public const int SHA1_BLOCK_SIZE = 64;
 public const int SHA1_LENGTH = 20;
 
@@ -72,3 +74,4 @@ public string hmac_sha1(string key, string message)
 	return Base64.encode(digest.data);
 }
 
+} // namespace Rest
