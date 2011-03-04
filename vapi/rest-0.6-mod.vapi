@@ -39,10 +39,14 @@ namespace Rest {
 		public string token { get; set; }
 		public string token_secret { get; set; }
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h")]
+	[CCode (cname="OAuthProxyCall", cheader_filename = "rest/oauth-proxy-call.h", type_check_function="OAUTH_PROXY_CALL")]
 	public class OAuthProxyCall : Rest.ProxyCall {
 		[CCode (has_construct_function = false)]
 		protected OAuthProxyCall ();
+
+		/* Note typo: "reponse"! */
+		[CCode (cname="oauth_proxy_call_parse_token_reponse")]
+		public void parse_token_response ();
 	}
 	[CCode (cheader_filename = "rest/rest-proxy.h")]
 	public class Proxy : GLib.Object {
