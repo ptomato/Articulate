@@ -15,6 +15,8 @@ public class MainWin : Window
 	[CCode (instance_pos = -1)]
 	public void on_authenticate(Gtk.Action action) {
 		var oauth = new Rest.OAuthProxy("anonymous", "anonymous", "https://www.google.com/accounts/", false);
+
+		// Request token
 		var call = oauth.new_call() as Rest.OAuthProxyCall;
 		call.set_function("OAuthGetRequestToken");
 		call.add_params(
@@ -27,7 +29,15 @@ public class MainWin : Window
 			error("Something went wrong: %s", e.message);
 		}
 		call.parse_token_response();
-		print("Token: %s\nToken secret: %s\n", oauth.get_token(), oauth.get_token_secret());
+
+		// Authorize token
+		var escaped_token = Uri.escape_string(oauth.get_token(), "", false);
+		var authorize_uri = @"https://www.google.com/accounts/OAuthAuthorizeToken?oauth_token=$escaped_token&hd=default";
+		try {
+			show_uri(null, authorize_uri, Gdk.CURRENT_TIME);
+		} catch(Error e) {
+			error("Something went wrong: %s", e.message);
+		}
 	}
 
 	// CONSTRUCTOR
