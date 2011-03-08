@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.16"/>
+  <requires lib="gtk+" version="2.20"/>
   <!-- interface-naming-policy project-wide -->
+  <object class="GtkAction" id="authenticate">
+    <property name="label">_Authenticate...</property>
+    <property name="short_label">_Authenticate</property>
+    <property name="tooltip">Log in to Google Docs</property>
+    <property name="stock_id">gtk-dialog-authentication</property>
+    <signal name="activate" handler="main_win_on_authenticate" swapped="no"/>
+  </object>
   <object class="GtkListStore" id="docs_model">
     <columns>
       <!-- column-name name -->
       <column type="gchararray"/>
     </columns>
   </object>
-  <object class="GtkTextBuffer" id="text_model"/>
   <object class="GtkVBox" id="frame">
     <property name="visible">True</property>
     <child>
@@ -18,7 +24,6 @@
           <object class="GtkToolButton" id="toolbutton1">
             <property name="visible">True</property>
             <property name="related_action">authenticate</property>
-            <property name="use_action_appearance">True</property>
             <property name="label" translatable="yes">toolbutton1</property>
             <property name="use_underline">True</property>
           </object>
@@ -30,6 +35,7 @@
       </object>
       <packing>
         <property name="expand">False</property>
+        <property name="fill">True</property>
         <property name="position">0</property>
       </packing>
     </child>
@@ -52,7 +58,7 @@
                 <property name="model">docs_model</property>
                 <property name="headers_clickable">False</property>
                 <property name="search_column">0</property>
-                <signal name="row_activated" handler="main_win_on_docs_view_row_activated"/>
+                <signal name="row-activated" handler="main_win_on_docs_view_row_activated" swapped="no"/>
                 <child>
                   <object class="GtkTreeViewColumn" id="name_column">
                     <property name="title">Documents</property>
@@ -94,6 +100,8 @@
         </child>
       </object>
       <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
         <property name="position">1</property>
       </packing>
     </child>
@@ -104,15 +112,54 @@
       </object>
       <packing>
         <property name="expand">False</property>
+        <property name="fill">True</property>
         <property name="position">2</property>
       </packing>
     </child>
   </object>
-  <object class="GtkAction" id="authenticate">
-    <property name="label">_Authenticate...</property>
-    <property name="short_label">_Authenticate</property>
-    <property name="tooltip">Log in to Google Docs</property>
-    <property name="stock_id">gtk-dialog-authentication</property>
-    <signal name="activate" handler="main_win_on_authenticate"/>
+  <object class="GtkTextBuffer" id="text_model"/>
+  <object class="GtkMessageDialog" id="verification_dialog">
+    <property name="border_width">12</property>
+    <property name="title" translatable="yes">Account Authorization</property>
+    <property name="type_hint">dialog</property>
+    <property name="skip_taskbar_hint">True</property>
+    <property name="buttons">ok-cancel</property>
+    <property name="text" translatable="yes">A window has opened in your browser asking you to authorize Google Docs 2 LaTeX to access your Google Docs account. After authorizing, you will be given a verification code. Enter it below to continue.</property>
+    <child internal-child="vbox">
+      <object class="GtkVBox" id="dialog-vbox4">
+        <property name="visible">True</property>
+        <property name="spacing">6</property>
+        <child internal-child="action_area">
+          <object class="GtkHButtonBox" id="dialog-action_area4">
+            <property name="visible">True</property>
+            <property name="layout_style">end</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="verification_code_entry">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">•</property>
+            <property name="activates_default">True</property>
+            <property name="truncate_multiline">True</property>
+            <property name="invisible_char_set">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
   </object>
 </interface>
