@@ -1,4 +1,5 @@
 using Gtk;
+using GData;
 
 public class MainWin : Window
 {
@@ -6,8 +7,11 @@ public class MainWin : Window
 	private TextBuffer content;
 	private ListStore documents;
 	private Statusbar statusbar;
-	private MessageDialog verify;
-	private Entry verify_code;
+	private ProgressBar progressbar;
+	// Dialogs
+	private PasswordDialog password_dialog;
+	// Internet stuff
+	private DocumentsService google;
 
 	// SIGNAL HANDLERS
 
@@ -16,47 +20,47 @@ public class MainWin : Window
 
 	[CCode (instance_pos = -1)]
 	public void on_authenticate(Gtk.Action action) {
-		var oauth = new Rest.OAuthProxy("anonymous", "anonymous", "https://www.google.com/accounts/", false);
-
-		try {
-			// Request token
-			var call = oauth.new_call() as Rest.OAuthProxyCall;
-			call.set_function("OAuthGetRequestToken");
-			call.add_params(
-				"scope", "https://docs.google.com/feeds/default/private/full",
-				"oauth_callback", "oob",
-				"xoauth_displayname", "Google Docs 2 LaTeX");
-			call.run(null);
-			call.parse_token_response();
-
-			// Ask user to authorize token
-			var escaped_token = Uri.escape_string(oauth.get_token(), "", false);
-			var authorize_uri = @"https://www.google.com/accounts/OAuthAuthorizeToken?oauth_token=$escaped_token&hd=default";
-			show_uri(null, authorize_uri, Gdk.CURRENT_TIME);
-		} catch(Error e) {
-			error("Something went wrong: %s", e.message);
-		}
-
-		var response = verify.run();
-		verify.hide();
+		var response = password_dialog.authenticate();
 		if(response != ResponseType.OK)
 			return;
-
+		
+		var username = password_dialog.username;
+		var password = password_dialog.password;
+		password_dialog.password = "";
+		
+		// Start the Google Docs service and send a request
+		google = new DocumentsService("BetaChi-TestProgram-0.1");
 		try {
-			// Exchange request token for access token
-			var verifier = verify_code.get_text().strip();
-			oauth.access_token("OAuthGetAccessToken", verifier);
+			google.authenticate(username, password, null);
 		} catch(Error e) {
-			var error_dialog = new MessageDialog(this, 
+			var error_dialog = new MessageDialog(this,
 				DialogFlags.MODAL | DialogFlags.DESTROY_WITH_PARENT,
 				MessageType.ERROR, ButtonsType.OK,
-				"There was a problem authorizing your account.");
+				"There was a problem logging in to your account.");
 			error_dialog.format_secondary_markup("Google returned the response:"
-				+ " <b>\"%s.\"</b>", e.message);
+				+ " <b>\"%s\"</b>", e.message);
 			error_dialog.title = "Google Docs 2 LaTeX";
 			error_dialog.run();
 			error_dialog.destroy();
 		}
+
+		var query = new DocumentsQuery("");
+		statusbar.push(0, "Getting documents feed");
+		google.query_documents_async.begin(query, null, (doc, count, total) => {
+			// Progress callback
+			if(total > 0) {
+				progressbar.fraction = (float)count / total;
+			} else {
+				progressbar.pulse();
+			}
+			TreeIter iter;
+			documents.append(out iter);
+			documents.set(iter, 0, doc.title, -1);
+		}, (obj, res) => {
+			// Async operation finished callback
+			statusbar.pop(0);
+			progressbar.fraction = 0.0;
+		});
 	}
 
 	// CONSTRUCTOR
@@ -72,8 +76,9 @@ public class MainWin : Window
 			content = builder.get_object("text_model") as TextBuffer;
 			documents = builder.get_object("docs_model") as ListStore;
 			statusbar = builder.get_object("statusbar") as Statusbar;
-			verify = builder.get_object("verification_dialog") as MessageDialog;
-			verify_code = builder.get_object("verification_code_entry") as Entry;
+			progressbar = builder.get_object("progressbar") as ProgressBar;
+			
+			password_dialog = new PasswordDialog(builder, this);
 		} catch(Error e) {
 			error("Could not load UI: %s\n", e.message);
 		}
@@ -82,5 +87,4 @@ public class MainWin : Window
 		set_default_size(800, 600);
 		this.destroy.connect(main_quit);
 	}
-
 }

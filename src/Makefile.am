@@ -2,7 +2,8 @@ bin_PROGRAMS = googledocs2latex
 
 googledocs2latex_SOURCES = \
 	main.vala \
-	mainwin.vala
+	mainwin.vala \
+	passworddialog.vala
 
 INCLUDES = \
 	-include config.h \
@@ -12,7 +13,7 @@ INCLUDES = \
 	-DPKGLIBDIR=\""$(pkglibdir)"\"
 
 VALAFLAGS = \
-	--vapidir=$(srcdir)/../vapi --pkg config --pkg rest-0.6-mod \
+	--vapidir=$(srcdir)/../vapi --pkg config \
 	@GOOGLEDOCS2LATEX_PACKAGES@
 
 googledocs2latex_LDADD = \
