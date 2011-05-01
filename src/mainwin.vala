@@ -1,4 +1,5 @@
 using Gtk;
+using GData;
 
 public class MainWin : Window
 {
@@ -8,9 +9,6 @@ public class MainWin : Window
 	private Statusbar statusbar;
 	// Dialogs
 	private PasswordDialog password_dialog;
-	// Internet stuff
-	private string authkey = null;
-	private Soup.Session session;
 
 	// SIGNAL HANDLERS
 
@@ -27,37 +25,28 @@ public class MainWin : Window
 		var password = password_dialog.password;
 		password_dialog.password = "";
 		
-		// Start the HTTP client and send a request
-		session = new Soup.SessionSync();
-		var message = Soup.form_request_new("POST", 
-			"https://www.google.com/accounts/ClientLogin", 
-			"accountType", "HOSTED_OR_GOOGLE",
-			"Email", username,
-			"Passwd", password,
-			"service", "writely",
-			"source", "BetaChi-TestProgram-0.1");
-		var status = session.send_message(message);
-	
-		// Display the response status
-		statusbar.push(0, "HTTP status: %u".printf(status));
-		
-		// Parse the response body
-		var response_fields = new HashTable<string, string>(str_hash, str_equal);
-		foreach(var line in message.response_body.flatten().data.split("\n")) {
-			var fields = line.split("=", 2);
-			if(fields[0] != null)
-				response_fields.insert(fields[0], fields[1]);
+		// Start the Google Docs service and send a request
+		var service = new DocumentsService("BetaChi-TestProgram-0.1");
+		try {
+			service.authenticate(username, password, null);
+			var query = new DocumentsQuery("");
+			var feed = service.query_documents(query, null, null);
+			foreach(var doc in feed.get_entries()) {
+				TextIter end;
+				content.get_end_iter(out end);
+				content.insert(end, doc.title + "\n", -1);
+			}
+		} catch(Error e) {
+			var error_dialog = new MessageDialog(this,
+				DialogFlags.MODAL | DialogFlags.DESTROY_WITH_PARENT,
+				MessageType.ERROR, ButtonsType.OK,
+				"There was a problem logging in to your account.");
+			error_dialog.format_secondary_markup("Google returned the response:"
+				+ " <b>\"%s\"</b>", e.message);
+			error_dialog.title = "Google Docs 2 LaTeX";
+			error_dialog.run();
+			error_dialog.destroy();
 		}
-		
-		// Obtain the Auth token
-		authkey = response_fields.lookup("Auth");
-		if(authkey == null) {
-			warning("Could not obtain Auth token\n");
-			return;
-		}
-			
-		// Put the response in the text view
-		content.set_text(authkey, -1);
 	}
 	
 	// CONSTRUCTOR
