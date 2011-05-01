@@ -7,6 +7,7 @@ public class MainWin : Window
 	private TextBuffer content;
 	private ListStore documents;
 	private Statusbar statusbar;
+	private ProgressBar progressbar;
 	// Dialogs
 	private PasswordDialog password_dialog;
 	// Internet stuff
@@ -44,7 +45,16 @@ public class MainWin : Window
 		}
 
 		var query = new DocumentsQuery("");
-		google.query_documents_async.begin(query, null, null, (obj, res) => {
+		statusbar.push(0, "Getting documents feed");
+		google.query_documents_async.begin(query, null, (entry, count, total) => {
+			// Progress callback
+			if(total > 0) {
+				progressbar.fraction = (float)count / total;
+			} else {
+				progressbar.pulse();
+			}
+		}, (obj, res) => {
+			// Async operation finished callback
 			try {
 				var feed = google.query_async.end(res); // bug in bindings?
 				foreach(var doc in feed.get_entries()) {
@@ -52,6 +62,8 @@ public class MainWin : Window
 					content.get_end_iter(out end);
 					content.insert(end, doc.title + "\n", -1);
 				}
+				statusbar.pop(0);
+				progressbar.fraction = 0.0;
 			} catch (Error e) {
 				error("Query failed");
 			}
@@ -71,6 +83,7 @@ public class MainWin : Window
 			content = builder.get_object("text_model") as TextBuffer;
 			documents = builder.get_object("docs_model") as ListStore;
 			statusbar = builder.get_object("statusbar") as Statusbar;
+			progressbar = builder.get_object("progressbar") as ProgressBar;
 			
 			password_dialog = new PasswordDialog(builder, this);
 			
