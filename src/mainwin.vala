@@ -9,6 +9,8 @@ public class MainWin : Window
 	private Statusbar statusbar;
 	// Dialogs
 	private PasswordDialog password_dialog;
+	// Internet stuff
+	private DocumentsService google;
 
 	// SIGNAL HANDLERS
 
@@ -26,16 +28,9 @@ public class MainWin : Window
 		password_dialog.password = "";
 		
 		// Start the Google Docs service and send a request
-		var service = new DocumentsService("BetaChi-TestProgram-0.1");
+		google = new DocumentsService("BetaChi-TestProgram-0.1");
 		try {
-			service.authenticate(username, password, null);
-			var query = new DocumentsQuery("");
-			var feed = service.query_documents(query, null, null);
-			foreach(var doc in feed.get_entries()) {
-				TextIter end;
-				content.get_end_iter(out end);
-				content.insert(end, doc.title + "\n", -1);
-			}
+			google.authenticate(username, password, null);
 		} catch(Error e) {
 			var error_dialog = new MessageDialog(this,
 				DialogFlags.MODAL | DialogFlags.DESTROY_WITH_PARENT,
@@ -47,6 +42,20 @@ public class MainWin : Window
 			error_dialog.run();
 			error_dialog.destroy();
 		}
+
+		var query = new DocumentsQuery("");
+		google.query_documents_async.begin(query, null, null, (obj, res) => {
+			try {
+				var feed = google.query_async.end(res); // bug in bindings?
+				foreach(var doc in feed.get_entries()) {
+					TextIter end;
+					content.get_end_iter(out end);
+					content.insert(end, doc.title + "\n", -1);
+				}
+			} catch (Error e) {
+				error("Query failed");
+			}
+		});
 	}
 	
 	// CONSTRUCTOR

@@ -351,7 +351,7 @@ namespace GData {
 		public static unowned string get_upload_uri (GData.DocumentsFolder folder);
 		public unowned GData.DocumentsEntry move_document_to_folder (GData.DocumentsEntry document, GData.DocumentsFolder folder, GLib.Cancellable cancellable) throws GLib.Error;
 		public unowned GData.DocumentsFeed query_documents (GData.DocumentsQuery query, GLib.Cancellable? cancellable, GData.QueryProgressCallback? progress_callback) throws GLib.Error;
-		public async void query_documents_async (GData.DocumentsQuery query, GLib.Cancellable cancellable, GData.QueryProgressCallback progress_callback, void* progress_user_data);
+		public async void query_documents_async (GData.DocumentsQuery query, GLib.Cancellable? cancellable, GData.QueryProgressCallback? progress_callback);
 		public unowned GData.DocumentsEntry remove_document_from_folder (GData.DocumentsEntry document, GData.DocumentsFolder folder, GLib.Cancellable cancellable) throws GLib.Error;
 		public unowned GData.DocumentsEntry update_document (GData.DocumentsEntry document, GLib.File document_file, GLib.Cancellable cancellable) throws GLib.Error;
 		public unowned GData.DocumentsEntry upload_document (GData.DocumentsEntry document, GLib.File document_file, GData.DocumentsFolder folder, GLib.Cancellable cancellable) throws GLib.Error;
