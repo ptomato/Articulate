@@ -46,27 +46,20 @@ public class MainWin : Window
 
 		var query = new DocumentsQuery("");
 		statusbar.push(0, "Getting documents feed");
-		google.query_documents_async.begin(query, null, (entry, count, total) => {
+		google.query_documents_async.begin(query, null, (doc, count, total) => {
 			// Progress callback
 			if(total > 0) {
 				progressbar.fraction = (float)count / total;
 			} else {
 				progressbar.pulse();
 			}
+			TreeIter iter;
+			documents.append(out iter);
+			documents.set(iter, 0, doc.title, -1);
 		}, (obj, res) => {
 			// Async operation finished callback
-			try {
-				var feed = google.query_async.end(res); // bug in bindings?
-				foreach(var doc in feed.get_entries()) {
-					TextIter end;
-					content.get_end_iter(out end);
-					content.insert(end, doc.title + "\n", -1);
-				}
-				statusbar.pop(0);
-				progressbar.fraction = 0.0;
-			} catch (Error e) {
-				error("Query failed");
-			}
+			statusbar.pop(0);
+			progressbar.fraction = 0.0;
 		});
 	}
 	
