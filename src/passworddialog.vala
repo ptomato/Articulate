@@ -27,9 +27,6 @@ public class PasswordDialog
 		var retval = password_dialog.run();
 		password_dialog.hide();
 		
-		if(!username.contains("@"))
-			username += "@gmail.com";
-		
 		return retval;
 	}
 }
