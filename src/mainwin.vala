@@ -53,11 +53,14 @@ public class MainWin : Window
 			} else {
 				progressbar.pulse();
 			}
-			TreeIter iter;
-			documents.append(out iter);
-			documents.set(iter, 0, doc.title, -1);
+			if(doc is DocumentsText) {
+				TreeIter iter;
+				documents.append(out iter);
+				documents.set(iter, 0, doc.title, -1);
+			}
 		}, (obj, res) => {
 			// Async operation finished callback
+			// We don't need the results, so don't call google.query_async.finish(res)
 			statusbar.pop(0);
 			progressbar.fraction = 0.0;
 		});
