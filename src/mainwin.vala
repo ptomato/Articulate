@@ -5,7 +5,7 @@ public class MainWin : Window
 {
 	// Saved widget pointers
 	private TextBuffer content;
-	private ListStore documents;
+	private TreeStore documents;
 	private Statusbar statusbar;
 	private ProgressBar progressbar;
 	// Dialogs
@@ -45,6 +45,7 @@ public class MainWin : Window
 		}
 
 		var query = new DocumentsQuery("");
+		query.show_folders = true;
 		statusbar.push(0, "Getting documents feed");
 		google.query_documents_async.begin(query, null, (doc, count, total) => {
 			// Progress callback
@@ -53,10 +54,22 @@ public class MainWin : Window
 			} else {
 				progressbar.pulse();
 			}
-			if(doc is DocumentsText) {
+			if(doc is DocumentsFolder) {
 				TreeIter iter;
-				documents.append(out iter);
-				documents.set(iter, 0, doc.title, -1);
+				documents.append(out iter, null);
+				documents.set(iter,
+					0, doc.title,
+					1, doc.id,
+					2, "folder",
+					-1);
+			} else if(doc is DocumentsText) {
+				TreeIter iter;
+				documents.append(out iter, null);
+				documents.set(iter,
+					0, doc.title,
+					1, (doc as DocumentsText).document_id,
+					2, "x-office-document",
+					-1);
 			}
 		}, (obj, res) => {
 			// Async operation finished callback
@@ -77,7 +90,7 @@ public class MainWin : Window
 
 			// Save widget pointers
 			content = builder.get_object("text_model") as TextBuffer;
-			documents = builder.get_object("docs_model") as ListStore;
+			documents = builder.get_object("docs_model") as TreeStore;
 			statusbar = builder.get_object("statusbar") as Statusbar;
 			progressbar = builder.get_object("progressbar") as ProgressBar;
 			

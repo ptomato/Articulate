@@ -9,9 +9,13 @@
     <property name="stock_id">gtk-dialog-authentication</property>
     <signal name="activate" handler="main_win_on_authenticate" swapped="no"/>
   </object>
-  <object class="GtkListStore" id="docs_model">
+  <object class="GtkTreeStore" id="docs_model">
     <columns>
       <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name id -->
+      <column type="gchararray"/>
+      <!-- column-name icon-name -->
       <column type="gchararray"/>
     </columns>
   </object>
@@ -66,6 +70,12 @@
                 <child>
                   <object class="GtkTreeViewColumn" id="name_column">
                     <property name="title">Documents</property>
+                    <child>
+                      <object class="GtkCellRendererPixbuf" id="cellrendererpixbuf1"/>
+                      <attributes>
+                        <attribute name="icon-name">2</attribute>
+                      </attributes>
+                    </child>
                     <child>
                       <object class="GtkCellRendererText" id="cellrenderertext1"/>
                       <attributes>
