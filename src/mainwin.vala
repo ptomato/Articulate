@@ -20,18 +20,60 @@ public class MainWin : Window
 
 	[CCode (instance_pos = -1)]
 	public void on_authenticate(Gtk.Action action) {
+		string username;
+		void *password = null;
+		bool cancel = false;
+
+		// See if a password is stored in the keyring
+		GnomeKeyring.find_password(GnomeKeyring.NETWORK_PASSWORD,
+			(res, pass) => {
+				switch(res) {
+					case GnomeKeyring.Result.OK:
+						password = GnomeKeyring.memory_strdup(pass);
+						return;
+					case GnomeKeyring.Result.DENIED:
+					case GnomeKeyring.Result.CANCELLED:
+						cancel = true;
+						return;
+					case GnomeKeyring.Result.NO_MATCH:
+						return;
+					default:
+						warning(@"Problem finding password in Gnome Keyring: $res");
+						return;
+				}
+			},
+			"user", "philip.chimento@gmail.com",
+			"server", "docs.google.com",
+			"protocol", "gdata",
+			"domain", "googledocs2latex",
+			null);
+		if(cancel)
+			return;
+
 		var response = password_dialog.authenticate();
 		if(response != ResponseType.OK)
 			return;
 		
-		var username = password_dialog.username;
-		var password = password_dialog.password;
+		username = password_dialog.username;
+		password = GnomeKeyring.memory_strdup(password_dialog.password);
 		password_dialog.password = "";
 		
 		// Start the Google Docs service and send a request
 		google = new DocumentsService("BetaChi-TestProgram-0.1");
 		try {
-			google.authenticate(username, password, null);
+			google.authenticate(username, (string)password, null);
+
+			// If it worked, save the password in the keyring
+			GnomeKeyring.store_password(GnomeKeyring.NETWORK_PASSWORD,
+				GnomeKeyring.DEFAULT,
+				"Google Account password for GoogleDocs2LaTeX",
+				(string)password,
+				(res) => { },
+				"user", username,
+				"server", "docs.google.com",
+				"protocol", "gdata",
+				"domain", "googledocs2latex",
+				null);
 		} catch(Error e) {
 			var error_dialog = new MessageDialog(this,
 				DialogFlags.MODAL | DialogFlags.DESTROY_WITH_PARENT,
@@ -42,6 +84,10 @@ public class MainWin : Window
 			error_dialog.title = "Google Docs 2 LaTeX";
 			error_dialog.run();
 			error_dialog.destroy();
+			return;
+		} finally {
+			GnomeKeyring.memory_free(password);
+			password = null;
 		}
 
 		var query = new DocumentsQuery("");
