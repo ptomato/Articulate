@@ -8,7 +8,10 @@ public class PasswordDialog
 	
 	public string username { 
 		get { return username_entry.get_text(); }
-		set { username_entry.set_text(value); }
+		set {
+			username_entry.set_text(value);
+			password_entry.grab_focus();
+		}
 	}
 	public string password {
 		get { return password_entry.get_text(); }

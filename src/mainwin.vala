@@ -12,6 +12,10 @@ public class MainWin : Window
 	private PasswordDialog password_dialog;
 	// Internet stuff
 	private DocumentsService google;
+	// Settings file
+	private KeyFile settings_file;
+	private string settings_filename;
+	private string username;
 
 	// SIGNAL HANDLERS
 
@@ -20,7 +24,6 @@ public class MainWin : Window
 
 	[CCode (instance_pos = -1)]
 	public void on_authenticate(Gtk.Action action) {
-		string username;
 		void *password = null;
 		bool cancel = false;
 
@@ -42,7 +45,7 @@ public class MainWin : Window
 						return;
 				}
 			},
-			"user", "philip.chimento@gmail.com",
+			"user", username,
 			"server", "docs.google.com",
 			"protocol", "gdata",
 			"domain", "googledocs2latex",
@@ -50,6 +53,8 @@ public class MainWin : Window
 		if(cancel)
 			return;
 
+		if(username != null)
+			password_dialog.username = username;
 		var response = password_dialog.authenticate();
 		if(response != ResponseType.OK)
 			return;
@@ -74,6 +79,8 @@ public class MainWin : Window
 				"protocol", "gdata",
 				"domain", "googledocs2latex",
 				null);
+			// And save the username
+			settings_file.set_string("general", "username", username);
 		} catch(Error e) {
 			var error_dialog = new MessageDialog(this,
 				DialogFlags.MODAL | DialogFlags.DESTROY_WITH_PARENT,
@@ -90,6 +97,55 @@ public class MainWin : Window
 			password = null;
 		}
 
+		// Now that we are authenticated, load the documents
+		refresh_document_list();
+	}
+
+	public void on_quit() {
+		try {
+			FileUtils.set_contents(settings_filename, settings_file.to_data());
+		} catch(Error e) {
+			warning("Could not save settings file: %s", e.message);
+		}
+		main_quit();
+	}
+
+	// CONSTRUCTOR
+
+	public MainWin() {
+		settings_file = new KeyFile();
+		settings_filename = Path.build_filename(Environment.get_home_dir(),  ".googledocs2latex");
+
+		try {
+			settings_file.load_from_file(settings_filename, KeyFileFlags.NONE);
+			username = settings_file.get_string("general", "username");
+		} catch {
+			username = null;
+		}
+
+		try {
+			var builder = new Builder();
+			builder.add_from_file("mainwin.ui");
+			builder.connect_signals(this);
+			add(builder.get_object("frame") as Widget);
+
+			// Save widget pointers
+			content = builder.get_object("text_model") as TextBuffer;
+			documents = builder.get_object("docs_model") as TreeStore;
+			statusbar = builder.get_object("statusbar") as Statusbar;
+			progressbar = builder.get_object("progressbar") as ProgressBar;
+
+			password_dialog = new PasswordDialog(builder, this);
+		} catch(Error e) {
+			error("Could not load UI: %s\n", e.message);
+		}
+
+		set_title(_("Google Docs 2 LaTeX"));
+		set_default_size(800, 600);
+		this.destroy.connect(on_quit);
+	}
+
+	public void refresh_document_list() {
 		var query = new DocumentsQuery("");
 		query.show_folders = true;
 		statusbar.push(0, "Getting documents feed");
@@ -123,30 +179,5 @@ public class MainWin : Window
 			statusbar.pop(0);
 			progressbar.fraction = 0.0;
 		});
-	}
-
-	// CONSTRUCTOR
-
-	public MainWin() {
-		try {
-			var builder = new Builder();
-			builder.add_from_file("mainwin.ui");
-			builder.connect_signals(this);
-			add(builder.get_object("frame") as Widget);
-
-			// Save widget pointers
-			content = builder.get_object("text_model") as TextBuffer;
-			documents = builder.get_object("docs_model") as TreeStore;
-			statusbar = builder.get_object("statusbar") as Statusbar;
-			progressbar = builder.get_object("progressbar") as ProgressBar;
-			
-			password_dialog = new PasswordDialog(builder, this);
-		} catch(Error e) {
-			error("Could not load UI: %s\n", e.message);
-		}
-
-		set_title(_("Google Docs 2 LaTeX"));
-		set_default_size(800, 600);
-		this.destroy.connect(main_quit);
 	}
 }
