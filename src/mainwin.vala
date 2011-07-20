@@ -5,6 +5,7 @@ public class MainWin : Window
 {
 	// Saved widget pointers
 	private TextBuffer content;
+	private TreeView documents_view;
 	private TreeStore documents;
 	private Statusbar statusbar;
 	private ProgressBar progressbar;
@@ -20,7 +21,27 @@ public class MainWin : Window
 	// SIGNAL HANDLERS
 
 	[CCode (instance_pos = -1)]
-	public void on_docs_view_row_activated(TreeView source, TreePath path, TreeViewColumn column) { }
+	public void on_docs_view_row_activated(TreeView source, TreePath path, TreeViewColumn column) {
+		content.text = "";
+
+		TreeIter iter;
+		source.model.get_iter(out iter, path);
+		DocumentsText document;
+		source.model.get(iter, 3, out document, -1);
+		var uri = document.get_download_uri(DocumentsTextFormat.HTML);
+		var stream = new DataInputStream(new DownloadStream(google, uri, null));
+		string line;
+
+		try {
+			while((line = stream.read_line(null)) != null) {
+				TextIter end;
+				content.get_end_iter(out end);
+				content.insert_text(end, line + "\n", -1);
+			}
+		} catch {
+			print("There was an error\n");
+		}
+	}
 
 	[CCode (instance_pos = -1)]
 	public void on_authenticate(Gtk.Action action) {
@@ -131,14 +152,16 @@ public class MainWin : Window
 
 			// Save widget pointers
 			content = builder.get_object("text_model") as TextBuffer;
-			documents = builder.get_object("docs_model") as TreeStore;
 			statusbar = builder.get_object("statusbar") as Statusbar;
+			documents_view = builder.get_object("docs_view") as TreeView;
 			progressbar = builder.get_object("progressbar") as ProgressBar;
 
 			password_dialog = new PasswordDialog(builder, this);
 		} catch(Error e) {
 			error("Could not load UI: %s\n", e.message);
 		}
+		documents = new TreeStore(4, typeof(string), typeof(string), typeof(string), typeof(DocumentsEntry));
+		documents_view.set_model(documents);
 
 		set_title(_("Google Docs 2 LaTeX"));
 		set_default_size(800, 600);
@@ -163,6 +186,7 @@ public class MainWin : Window
 					0, doc.title,
 					1, doc.id,
 					2, "folder",
+					3, doc,
 					-1);
 			} else if(doc is DocumentsText) {
 				TreeIter iter;
@@ -171,6 +195,7 @@ public class MainWin : Window
 					0, doc.title,
 					1, (doc as DocumentsText).document_id,
 					2, "x-office-document",
+					3, doc,
 					-1);
 			}
 		}, (obj, res) => {

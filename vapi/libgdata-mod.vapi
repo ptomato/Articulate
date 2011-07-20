@@ -320,7 +320,7 @@ namespace GData {
 	[CCode (cheader_filename = "gdata/gdata.h")]
 	public class DocumentsQuery : GData.Query {
 		[CCode (has_construct_function = false)]
-		public DocumentsQuery (string q);
+		public DocumentsQuery (string? q);
 		public void add_collaborator (string email_address);
 		public void add_reader (string email_address);
 		public unowned GLib.List get_collaborator_addresses ();
@@ -370,12 +370,13 @@ namespace GData {
 		[CCode (has_construct_function = false)]
 		public DocumentsText (string id);
 		public unowned GLib.File download_document (GData.DocumentsService service, string content_type, GData.DocumentsTextFormat export_format, GLib.File destination_file, bool replace_file_if_exists, GLib.Cancellable cancellable) throws GLib.Error;
+		[CCode (cname="gdata_documents_document_get_download_uri")]
 		public unowned string get_download_uri (GData.DocumentsTextFormat export_format);
 	}
 	[CCode (cheader_filename = "gdata/gdata.h")]
 	public class DownloadStream : GLib.InputStream, GLib.Seekable {
 		[CCode (type = "GInputStream*", has_construct_function = false)]
-		public DownloadStream (GData.Service service, string download_uri);
+		public DownloadStream (GData.Service service, string download_uri, GLib.Cancellable? cancellable);
 		public ssize_t get_content_length ();
 		public unowned string get_content_type ();
 		public unowned string get_download_uri ();

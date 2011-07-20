@@ -9,16 +9,6 @@
     <property name="stock_id">gtk-dialog-authentication</property>
     <signal name="activate" handler="main_win_on_authenticate" swapped="no"/>
   </object>
-  <object class="GtkTreeStore" id="docs_model">
-    <columns>
-      <!-- column-name name -->
-      <column type="gchararray"/>
-      <!-- column-name id -->
-      <column type="gchararray"/>
-      <!-- column-name icon-name -->
-      <column type="gchararray"/>
-    </columns>
-  </object>
   <object class="GtkVBox" id="frame">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -60,7 +50,6 @@
               <object class="GtkTreeView" id="docs_view">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="model">docs_model</property>
                 <property name="headers_clickable">False</property>
                 <property name="search_column">0</property>
                 <signal name="row-activated" handler="main_win_on_docs_view_row_activated" swapped="no"/>
