@@ -7,8 +7,8 @@
 <xsl:template match="/">
   <document>
     <head>
-      <title><xsl:value-of select="html/body/h1/span"/></title>
-      <authors><xsl:value-of select="html/body/p/span"/></authors>
+      <title><xsl:value-of select="html/body/h1[1]/span"/></title>
+      <authors><xsl:value-of select="html/body/p[1]/span"/></authors>
     </head>
     <body>
       <xsl:for-each select="html/body/h2/span">
