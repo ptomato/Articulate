@@ -2,27 +2,36 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-<xsl:output method="xml" indent="yes"/>
+<xsl:output method="xml" indent="yes" encoding="UTF-8"/>
 
 <xsl:template match="/">
   <document>
-    <head>
-      <title><xsl:value-of select="html/body/h1[1]/span"/></title>
-      <authors><xsl:value-of select="html/body/p[1]/span"/></authors>
-    </head>
-    <body>
-      <xsl:for-each select="html/body/h2/span">
-        <section><xsl:value-of select="."/></section>
-      </xsl:for-each>
-      <xsl:for-each select="html/body/p">
-        <xsl:if test="not(position()=1)">
-          <xsl:if test="span != ''">
-            <p><xsl:value-of select="normalize-space(span)"/></p>
-          </xsl:if>
-        </xsl:if>
-      </xsl:for-each>
-    </body>
+    <xsl:apply-templates mode="preamble" select="/html/body"/>
   </document>
+</xsl:template>
+
+<xsl:template mode="preamble" match="/html/body">
+  <preamble>
+    <title><xsl:value-of select="h1[1]/span"/></title>
+    <authors><xsl:value-of select="p[1]/span"/></authors>
+  </preamble>
+  <body>
+    <xsl:apply-templates mode="body" select="/html/body"/>
+  </body>
+</xsl:template>
+
+<xsl:template mode="body" match="/html/body">
+  <xsl:for-each select="h2">
+    <xsl:variable name="header" select="."/>
+    <section>
+      <title><xsl:value-of select="span"/></title>
+      <xsl:for-each select="following-sibling::p[preceding-sibling::h2[1] = $header]">
+	    <xsl:if test="span != ''">
+	      <p><xsl:value-of select="normalize-space(span)"/></p>
+	    </xsl:if>
+      </xsl:for-each>
+    </section>
+  </xsl:for-each>
 </xsl:template>
 
 </xsl:stylesheet>
