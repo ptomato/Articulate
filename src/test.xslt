@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:str="http://exslt.org/strings"
+	extension-element-prefixes="str">
 
 <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
 
@@ -13,7 +16,13 @@
 <xsl:template mode="preamble" match="/html/body">
   <preamble>
     <title><xsl:value-of select="h1[1]/span"/></title>
-    <authors><xsl:value-of select="p[1]/span"/></authors>
+    <authors>
+      <xsl:for-each select="str:tokenize(string(p[1]/span), ',')">
+        <author>
+          <xsl:value-of select="normalize-space(.)"/>
+        </author>
+      </xsl:for-each>
+    </authors>
   </preamble>
   <body>
     <xsl:apply-templates mode="body" select="/html/body"/>
