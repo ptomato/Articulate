@@ -41,7 +41,6 @@ public class MainWin : Window
 			print("There was an error\n");
 		}
 		code_view.html_code = builder.str;
-		code_view.show_code(Repr.RAW_HTML);
 	}
 
 	[CCode (instance_pos = -1)]
