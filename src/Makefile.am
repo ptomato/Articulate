@@ -6,7 +6,8 @@ googledocs2latex_SOURCES = \
 	passworddialog.vala \
 	codeview.vala \
 	subprocess.vala \
-	semantictransform.vala
+	semantictransform.vala \
+	latextransform.vala
 
 INCLUDES = \
 	-include config.h \

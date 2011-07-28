@@ -70,11 +70,24 @@ public class CodeView : VBox
 		}
 		set {
 			code[Repr.SEMANTIC_XML] = value;
+			var transform = new LaTeXTransform();
+			transform.process.begin(code[Repr.SEMANTIC_XML], (obj, res) => {
+				latex_code_utf8_inserts = transform.process.end(res);
+			});
 			if(stage_selector.active == Repr.SEMANTIC_XML)
 				content.text = code[Repr.SEMANTIC_XML];
 		}
 	}
-	public string latex_code_utf8_inserts;
+	public string latex_code_utf8_inserts {
+		get {
+			return code[Repr.LATEX_UTF8_INSERTS];
+		}
+		set {
+			code[Repr.LATEX_UTF8_INSERTS] = value;
+			if(stage_selector.active == Repr.LATEX_UTF8_INSERTS)
+				content.text = code[Repr.LATEX_UTF8_INSERTS];
+		}
+	}
 	public string latex_code_utf8;
 	public string latex_code;
 	
