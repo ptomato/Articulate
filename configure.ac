@@ -13,7 +13,7 @@ AM_PROG_VALAC([0.7.0])
 AC_PROG_INSTALL
 IT_PROG_INTLTOOL([0.35])
 
-GOOGLEDOCS2LATEX_PACKAGES="--pkg gtk+-2.0 --pkg gio-2.0 --pkg gmodule-2.0 --pkg gnome-keyring-1-mod --pkg libgdata-mod"
+GOOGLEDOCS2LATEX_PACKAGES="--pkg gtk+-2.0 --pkg gio-2.0 --pkg gmodule-2.0 --pkg gnome-keyring-1-mod --pkg libgdata-mod --pkg posix"
 PKG_CHECK_MODULES(GOOGLEDOCS2LATEX, [
 	gtk+-2.0 >= 2.14.0
 	gio-2.0

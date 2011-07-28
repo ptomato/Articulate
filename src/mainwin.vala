@@ -1,6 +1,7 @@
 using Gtk;
 using GData;
 
+/* Enumeration for intermediate representations of the document */
 enum Repr {
 	RAW_HTML,
 	SEMANTIC_XML,
@@ -166,6 +167,20 @@ public class MainWin : Window
 
 	[CCode (instance_pos = -1)]
 	public void on_stage_selector_changed(ComboBox source) {
+		if(code[source.active] == "") {
+			switch(source.active) {
+				case Repr.RAW_HTML:
+					break;
+				case Repr.SEMANTIC_XML:
+					statusbar.push(0, "Transforming HTML");
+					var transform = new SemanticTransform();
+					code[Repr.SEMANTIC_XML] = transform.process(code[Repr.RAW_HTML]);
+					statusbar.pop(0);
+					break;
+				default:
+					break;
+			}
+		}
 		content.text = code[source.active];
 	}
 
@@ -203,8 +218,10 @@ public class MainWin : Window
 		documents_view.set_model(documents);
 
 		// Construct the combo box values from the enum
-		foreach(Repr repr in Repr.all())
+		foreach(Repr repr in Repr.all()) {
 			stage_selector.append_text(repr.to_string());
+			code[repr] = "";
+		}
 		stage_selector.active = Repr.RAW_HTML;
 
 		set_title(_("Google Docs 2 LaTeX"));
