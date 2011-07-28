@@ -13,40 +13,48 @@ public class SemanticTransform
 		return true;
 	}
 
-	public string process(string input) {
-		int stdin, stdout, stderr, status;
+	public async string process(string input) {
+		int stdin, stdout, stderr, status = 0;
 		Pid child_pid;
-		var stdout_output = new StringBuilder();
-		var stderr_output = new StringBuilder();
 		
 		// Start the xsltproc process
 		try {
-			Process.spawn_async_with_pipes(null, {
-				"xsltproc",
-				"--html",
-				"html2semantic.xslt",
-				"-",
-				null
-			}, null, SpawnFlags.SEARCH_PATH, null,
-			out child_pid, out stdin, out stdout, out stderr);
+			Process.spawn_async_with_pipes(null,
+				{ "xsltproc", "--html", "html2semantic.xslt", "-", null }, 
+				null, SpawnFlags.SEARCH_PATH | SpawnFlags.DO_NOT_REAP_CHILD, null,
+				out child_pid, out stdin, out stdout, out stderr);
 		} catch(Error e) {
 			warning("Error starting subprocess: %s", e.message);
 			return "";
 		}
+
+		// Set up I/O channels
 		var stdout_channel = new IOChannel.unix_new(stdout);
+		var stdout_output = new StringBuilder();
 		stdout_channel.add_watch(IOCondition.IN | IOCondition.PRI, 
-			(s, c) => { return append_output(s, c, stdout_output); });
+			(s, c) => append_output(s, c, stdout_output));
+
 		var stderr_channel = new IOChannel.unix_new(stderr);
+		var stderr_output = new StringBuilder();
 		stderr_channel.add_watch(IOCondition.IN | IOCondition.PRI,
-			(s, c) => { return append_output(s, c, stderr_output); });
-		
+			(s, c) => append_output(s, c, stderr_output));
+
+		// Write the HTML code to the xsltproc's stdin
 		if(Posix.write(stdin, input, input.length) == -1) {
 			warning("Error writing to subprocess: %s", Posix.strerror(Posix.errno));
 		}
-		Posix.waitpid(child_pid, out status, 0);
-		
-		printerr("%s\n", stderr_output.str);
-		
+		Posix.close(stdin);
+
+		// Wait for xsltproc to finish
+		ChildWatch.add(child_pid, (pid, code) => {
+			status = code;
+			process.callback();
+		});
+		yield;
+		Process.close_pid(child_pid);
+
+		printerr("Status: %d Errors: '%s'\n", Process.exit_status(status), stderr_output.str);
+
 		return stdout_output.str;
 	}
 }

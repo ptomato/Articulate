@@ -174,9 +174,12 @@ public class MainWin : Window
 				case Repr.SEMANTIC_XML:
 					statusbar.push(0, "Transforming HTML");
 					var transform = new SemanticTransform();
-					code[Repr.SEMANTIC_XML] = transform.process(code[Repr.RAW_HTML]);
-					statusbar.pop(0);
-					break;
+					transform.process.begin(code[Repr.RAW_HTML], (obj, res) => {
+						statusbar.pop(0);
+						code[Repr.SEMANTIC_XML] = transform.process.end(res);
+						content.text = code[Repr.SEMANTIC_XML];
+					});
+					return;
 				default:
 					break;
 			}
