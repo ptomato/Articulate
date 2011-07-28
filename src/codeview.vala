@@ -24,6 +24,18 @@ public enum Repr {
 				assert_not_reached();
 		}
 	}
+	
+	public SourceLanguage get_language() {
+		var lmanager = SourceLanguageManager.get_default();
+		switch(this) {
+			case RAW_HTML:
+				return lmanager.get_language("html");
+			case SEMANTIC_XML:
+				return lmanager.get_language("xml");
+			default:
+				return lmanager.get_language("latex");
+		}
+	}
 
 	public static Repr[] all() {
 		return { RAW_HTML, SEMANTIC_XML, LATEX_UTF8_INSERTS, LATEX_UTF8, FINAL_LATEX };
@@ -34,9 +46,9 @@ public class CodeView : VBox
 {
 	// Widget pointers
 	private ComboBox stage_selector;
-	private TextView code_view;
+	private SourceView code_view;
 	// Content
-	private TextBuffer content;
+	private SourceBuffer content;
 	private string code[5];
 	public string html_code { 
 		get {
@@ -71,6 +83,7 @@ public class CodeView : VBox
 	[CCode (instance_pos = -1)]
 	public void on_stage_selector_changed(ComboBox source) {
 		content.text = code[source.active];
+		content.language = ((Repr)source.active).get_language();
 	}
 	
 	// CONSTRUCTOR
@@ -84,9 +97,12 @@ public class CodeView : VBox
 		stage_selector.changed.connect(on_stage_selector_changed);
 		
 		var scrollwin = new ScrolledWindow(null, null);
-		code_view = new TextView();
+		code_view = new SourceView();
 		code_view.wrap_mode = WrapMode.CHAR;
-		content = code_view.buffer;
+		content = code_view.buffer as SourceBuffer;
+		content.language = Repr.RAW_HTML.get_language();
+		var smanager = SourceStyleSchemeManager.get_default();
+		content.style_scheme = smanager.get_scheme("tango");
 		
 		// Put widgets together
 		scrollwin.add(code_view);
