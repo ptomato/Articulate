@@ -35,6 +35,7 @@
     <xsl:variable name="section-type">
       <xsl:choose>
         <xsl:when test="span='Abstract'">abstract</xsl:when>
+        <xsl:when test="span='References' or span='Bibliography'">bibliography</xsl:when>
         <xsl:otherwise>section</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
@@ -44,7 +45,18 @@
       </xsl:if>
       <xsl:for-each select="following-sibling::p[preceding-sibling::h2[1] = $header]">
 	    <xsl:if test="span != ''">
-	      <p><xsl:value-of select="normalize-space(span)"/></p>
+	      <xsl:variable name="trim-content" select="normalize-space(span)"/>
+	      <xsl:choose>
+	        <xsl:when test="$section-type='bibliography' and starts-with($trim-content,'[')">
+	          <item>
+	            <citekey><xsl:value-of select="substring-after(substring-before($trim-content,']'),'[')"/></citekey>
+	            <p><xsl:value-of select="normalize-space(substring-after($trim-content,']'))"/></p>
+	          </item>
+	        </xsl:when>
+	        <xsl:otherwise>
+	          <p><xsl:value-of select="$trim-content"/></p>
+	        </xsl:otherwise>
+	      </xsl:choose>
 	    </xsl:if>
       </xsl:for-each>
     </xsl:element>
