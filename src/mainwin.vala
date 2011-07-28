@@ -1,45 +1,15 @@
 using Gtk;
 using GData;
 
-/* Enumeration for intermediate representations of the document */
-enum Repr {
-	RAW_HTML,
-	SEMANTIC_XML,
-	LATEX_UTF8_INSERTS,
-	LATEX_UTF8,
-	FINAL_LATEX;
-
-	public string to_string() {
-		switch(this) {
-			case RAW_HTML:
-				return "Raw HTML from Google Docs";
-			case SEMANTIC_XML:
-				return "Semantic XML";
-			case LATEX_UTF8_INSERTS:
-				return "LaTeX with UTF-8 and inserts";
-			case LATEX_UTF8:
-				return "LaTeX with UTF-8";
-			case FINAL_LATEX:
-				return "LaTeX code";
-			default:
-				assert_not_reached();
-		}
-	}
-
-	public static Repr[] all() {
-		return { RAW_HTML, SEMANTIC_XML, LATEX_UTF8_INSERTS, LATEX_UTF8, FINAL_LATEX };
-	}
-}
 
 public class MainWin : Window
 {
 	// Saved widget pointers
-	private TextBuffer content;
 	private TreeView documents_view;
 	private TreeStore documents;
 	private Statusbar statusbar;
 	private ProgressBar progressbar;
-	private ComboBox stage_selector;
+	private CodeView code_view;
 	// Dialogs
 	private PasswordDialog password_dialog;
 	// Internet stuff
@@ -48,15 +18,12 @@ public class MainWin : Window
 	private KeyFile settings_file;
 	private string settings_filename;
 	private string username;
-	// Intermediate representations
-	private string code[5];
 
 	// SIGNAL HANDLERS
 
 	[CCode (instance_pos = -1)]
 	public void on_docs_view_row_activated(TreeView source, TreePath path, TreeViewColumn column) {
-		foreach(Repr repr in Repr.all())
-			code[repr] = "";
+		code_view.clear_code();
 
 		TreeIter iter;
 		source.model.get_iter(out iter, path);
@@ -73,8 +40,8 @@ public class MainWin : Window
 		} catch {
 			print("There was an error\n");
 		}
-		code[Repr.RAW_HTML] = builder.str;
-		content.text = code[Repr.RAW_HTML];
+		code_view.html_code = builder.str;
+		code_view.show_code(Repr.RAW_HTML);
 	}
 
 	[CCode (instance_pos = -1)]
@@ -165,28 +132,6 @@ public class MainWin : Window
 		main_quit();
 	}
 
-	[CCode (instance_pos = -1)]
-	public void on_stage_selector_changed(ComboBox source) {
-		if(code[source.active] == "") {
-			switch(source.active) {
-				case Repr.RAW_HTML:
-					break;
-				case Repr.SEMANTIC_XML:
-					statusbar.push(0, "Transforming HTML");
-					var transform = new SemanticTransform();
-					transform.process.begin(code[Repr.RAW_HTML], (obj, res) => {
-						statusbar.pop(0);
-						code[Repr.SEMANTIC_XML] = transform.process.end(res);
-						content.text = code[Repr.SEMANTIC_XML];
-					});
-					return;
-				default:
-					break;
-			}
-		}
-		content.text = code[source.active];
-	}
-
 	// CONSTRUCTOR
 
 	public MainWin() {
@@ -207,11 +152,12 @@ public class MainWin : Window
 			add(builder.get_object("frame") as Widget);
 
 			// Save widget pointers
-			content = builder.get_object("text_model") as TextBuffer;
 			statusbar = builder.get_object("statusbar") as Statusbar;
 			documents_view = builder.get_object("docs_view") as TreeView;
 			progressbar = builder.get_object("progressbar") as ProgressBar;
-			stage_selector = builder.get_object("stage_selector") as ComboBox;
+			var pane = builder.get_object("pane") as HPaned;
+			code_view = new CodeView();
+			pane.add2(code_view);
 
 			password_dialog = new PasswordDialog(builder, this);
 		} catch(Error e) {
@@ -219,13 +165,6 @@ public class MainWin : Window
 		}
 		documents = new TreeStore(4, typeof(string), typeof(string), typeof(string), typeof(DocumentsEntry));
 		documents_view.set_model(documents);
-
-		// Construct the combo box values from the enum
-		foreach(Repr repr in Repr.all()) {
-			stage_selector.append_text(repr.to_string());
-			code[repr] = "";
-		}
-		stage_selector.active = Repr.RAW_HTML;
 
 		set_title(_("Google Docs 2 LaTeX"));
 		set_default_size(800, 600);
