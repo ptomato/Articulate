@@ -5,6 +5,7 @@ googledocs2latex_SOURCES = \
 	mainwin.vala \
 	passworddialog.vala \
 	codeview.vala \
+	subprocess.vala \
 	semantictransform.vala
 
 INCLUDES = \
