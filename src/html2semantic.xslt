@@ -15,9 +15,9 @@
 
 <xsl:template mode="preamble" match="/html/body">
   <preamble>
-    <title><xsl:value-of select="h1[1]/span"/></title>
+    <title><xsl:value-of select="h1[1]"/></title>
     <authors>
-      <xsl:for-each select="str:tokenize(string(p[1]/span), ',')">
+      <xsl:for-each select="str:tokenize(string(p[1]), ',')">
         <author>
           <xsl:value-of select="normalize-space(.)"/>
         </author>
