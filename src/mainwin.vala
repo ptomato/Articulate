@@ -30,7 +30,7 @@ public class MainWin : Window
 		DocumentsText document;
 		source.model.get(iter, 3, out document, -1);
 		var uri = document.get_download_uri(DocumentsTextFormat.HTML);
-		var stream = new DataInputStream(new DownloadStream(google, uri, null));
+		var stream = new DataInputStream(new DownloadStream(google, null, uri, null));
 		string line;
 
 		var builder = new StringBuilder();
