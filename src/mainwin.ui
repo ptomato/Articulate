@@ -21,7 +21,6 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="related_action">authenticate</property>
-            <property name="label" translatable="yes">toolbutton1</property>
             <property name="use_underline">True</property>
           </object>
           <packing>
