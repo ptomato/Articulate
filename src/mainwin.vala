@@ -46,7 +46,7 @@ public class MainWin : Window
 
 	[CCode (instance_pos = -1)]
 	public void on_authenticate(Gtk.Action action) {
-		void *password = null;
+		unowned string? password = null;
 		bool cancel = false;
 
 		// See if a password is stored in the keyring
@@ -89,13 +89,13 @@ public class MainWin : Window
 		authorizer = new ClientLoginAuthorizer("BetaChi-TestProgram-0.1", typeof(DocumentsService));
 		google = new DocumentsService(authorizer);
 		try {
-			authorizer.authenticate(username, (string)password, null);
+			authorizer.authenticate(username, password, null);
 
 			// If it worked, save the password in the keyring
 			GnomeKeyring.store_password(GnomeKeyring.NETWORK_PASSWORD,
 				GnomeKeyring.DEFAULT,
 				"Google Account password for GoogleDocs2LaTeX",
-				(string)password,
+				password,
 				(res) => { },
 				"user", username,
 				"server", "docs.google.com",
@@ -116,7 +116,7 @@ public class MainWin : Window
 			error_dialog.destroy();
 			return;
 		} finally {
-			GnomeKeyring.memory_free(password);
+			GnomeKeyring.memory_free((void *)password);
 			password = null;
 		}
 
