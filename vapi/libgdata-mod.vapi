@@ -510,16 +510,51 @@ namespace GData {
 		[NoAccessorMethod]
 		public string title { owned get; set; }
 	}
+	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_authorizer_get_type()")]
+	public interface Authorizer : GLib.Object {
+		public void process_request (AuthorizationDomain? domain, Soup.Message message);
+		public static bool is_authorized_for_domain (Authorizer? authorizer, AuthorizationDomain domain);
+		public bool refresh_authorization (GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool refresh_authorization_async (GLib.Cancellable? cancellable) throws GLib.Error;
+	}
+	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_client_login_authorizer_get_type ()")]
+	public class ClientLoginAuthorizer : GLib.Object, GData.Authorizer {
+		[CCode (has_construct_function = false)]
+		public ClientLoginAuthorizer (string application_name, GLib.Type service_type);
+		public ClientLoginAuthorizer.for_authorization_domains (string application_name, GLib.List<GData.AuthorizationDomain> authorization_domains);
+		public bool authenticate (string username, string password, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool authenticate_async (string username, string password, GLib.Cancellable? cancellable) throws GLib.Error;
+		public string client_id { get; construct; }
+		public string password { get; }
+		public Soup.URI proxy_uri { get; set; }
+		public uint timeout { get; set; }
+		public string username { get; }
+		public signal string captcha_challenge (string uri);
+	}
+	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_oauth1_authorizer_get_type ()")]
+	public class OAuth1Authorizer : GLib.Object, GData.Authorizer {
+		[CCode (has_construct_function = false)]
+		public OAuth1Authorizer (string application_name, GLib.Type service_type);
+		public OAuth1Authorizer.for_authorization_domains (string application_name, GLib.List<GData.AuthorizationDomain> authorization_domains);
+		public string request_authentication_uri (out string token, out string token_secret, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async string request_authentication_uri_async (out string token, out string token_secret, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool request_authorization (string token, string token_secret, string verifier, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool request_authorization_async (string token, string token_secret, string verifier, GLib.Cancellable? cancellable) throws GLib.Error;
+		public string application_name { get; construct; }
+		public string locale { get; set; }
+		public Soup.URI proxy_uri { get; set; }
+		public uint timeout { get; set; }
+	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_documents_service_get_type ()")]
 	public class DocumentsService : GData.Service, GData.Batchable {
 		[CCode (has_construct_function = false)]
-		public DocumentsService (string client_id);
+		public DocumentsService (Authorizer authorizer);
 		public GData.DocumentsEntry add_entry_to_folder (GData.DocumentsEntry entry, GData.DocumentsFolder folder, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async GData.DocumentsEntry add_entry_to_folder_async (GData.DocumentsEntry entry, GData.DocumentsFolder folder, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GData.DocumentsDocument finish_upload (GData.UploadStream upload_stream) throws GLib.Error;
 		public static string get_upload_uri (GData.DocumentsFolder? folder);
 		public GData.DocumentsFeed query_documents (GData.DocumentsQuery? query, GLib.Cancellable? cancellable, GData.QueryProgressCallback progress_callback) throws GLib.Error;
-		public async void query_documents_async (GData.DocumentsQuery? query, GLib.Cancellable? cancellable, GData.QueryProgressCallback progress_callback);
+		public async void query_documents_async (GData.DocumentsQuery? query, GLib.Cancellable? cancellable, owned GData.QueryProgressCallback progress_callback);
 		public GData.DocumentsEntry remove_entry_from_folder (GData.DocumentsEntry entry, GData.DocumentsFolder folder, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async GData.DocumentsEntry remove_entry_from_folder_async (GData.DocumentsEntry entry, GData.DocumentsFolder folder, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GData.UploadStream update_document (GData.DocumentsDocument document, string slug, string content_type, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -1304,8 +1339,6 @@ namespace GData {
 		protected Service ();
 		[NoWrapper]
 		public virtual void append_query_headers (Soup.Message message);
-		public bool authenticate (string username, string password, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async bool authenticate_async (string username, string password, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool delete_entry (GData.Entry entry, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool delete_entry_async (GData.Entry entry, GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned string get_client_id ();
