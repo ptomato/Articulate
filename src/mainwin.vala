@@ -14,6 +14,7 @@ public class MainWin : Window
 	private PasswordDialog password_dialog;
 	// Internet stuff
 	private DocumentsService google;
+	private ClientLoginAuthorizer authorizer;
 	// Settings file
 	private KeyFile settings_file;
 	private string settings_filename;
@@ -85,9 +86,10 @@ public class MainWin : Window
 		password_dialog.password = "";
 		
 		// Start the Google Docs service and send a request
-		google = new DocumentsService("BetaChi-TestProgram-0.1");
+		authorizer = new ClientLoginAuthorizer("BetaChi-TestProgram-0.1", typeof(DocumentsService));
+		google = new DocumentsService(authorizer);
 		try {
-			google.authenticate(username, (string)password, null);
+			authorizer.authenticate(username, (string)password, null);
 
 			// If it worked, save the password in the keyring
 			GnomeKeyring.store_password(GnomeKeyring.NETWORK_PASSWORD,
