@@ -166,6 +166,7 @@ public class MainWin : Window
 	}
 
 	public void refresh_document_list() {
+		assert(google.is_authorized());
 		var query = new DocumentsQuery("");
 		query.show_folders = true;
 		statusbar.push(0, "Getting documents feed");
@@ -197,9 +198,15 @@ public class MainWin : Window
 			}
 		}, (obj, res) => {
 			// Async operation finished callback
-			// We don't need the results, so don't call google.query_async.finish(res)
 			statusbar.pop(0);
 			progressbar.fraction = 0.0;
+			try {
+				google.query_async.end(res);
+			} catch(Error e) {
+				var message = Markup.escape_text(e.message);
+				error_dialog("There was a problem retrieving the list of documents.",
+					@"Google returned the response: <b>\"$message\"</b>");
+			}
 		});
 	}
 
