@@ -16,8 +16,8 @@ public class MainWin : Window
 	private DocumentsService google;
 	private ClientLoginAuthorizer authorizer;
 	// Settings file
-	private KeyFile settings_file;
-	private string settings_filename;
+	private KeyFile settings;
+	private File settings_file;
 	private string username;
 
 	// SIGNAL HANDLERS
@@ -103,7 +103,7 @@ public class MainWin : Window
 				"domain", "googledocs2latex",
 				null);
 			// And save the username
-			settings_file.set_string("general", "username", username);
+			settings.set_string("general", "username", username);
 		} catch(Error e) {
 			error_dialog("There was a problem logging in to your account.",
 				@"Google returned the response: <b>\"$(e.message)\"</b>");
@@ -119,7 +119,8 @@ public class MainWin : Window
 
 	public void on_quit() {
 		try {
-			FileUtils.set_contents(settings_filename, settings_file.to_data());
+			var text = settings.to_data();
+			settings_file.replace_contents(text, text.length, null, false, FileCreateFlags.NONE, null);
 		} catch(Error e) {
 			warning("Could not save settings file: %s", e.message);
 		}
@@ -129,12 +130,12 @@ public class MainWin : Window
 	// CONSTRUCTOR
 
 	public MainWin() {
-		settings_file = new KeyFile();
-		settings_filename = Path.build_filename(Environment.get_home_dir(),  ".googledocs2latex");
+		settings = new KeyFile();
+		settings_file = File.new_for_path(Environment.get_home_dir()).get_child(".googledocs2latex");
 
 		try {
-			settings_file.load_from_file(settings_filename, KeyFileFlags.NONE);
-			username = settings_file.get_string("general", "username");
+			settings.load_from_file(settings_file.get_path(), KeyFileFlags.NONE);
+			username = settings.get_string("general", "username");
 		} catch {
 			username = null;
 		}
