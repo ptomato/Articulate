@@ -12,10 +12,14 @@ namespace Subprocess
 		builder.append(text);
 		return true;
 	}
-	
+
 	public async void run_with_input(string[] argv, string input, out string output, out string error_output, out int status) {
 		int stdin, stdout, stderr, _status = 0;
 		Pid child_pid;
+
+		// Default out values
+		output = error_output = "";
+		status = 0;
 		
 		// Start the subprocess
 		try {
