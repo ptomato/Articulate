@@ -14,11 +14,11 @@ public class MainWin : Window
 	private PasswordDialog password_dialog;
 	// Internet stuff
 	private DocumentsService google;
-	private ClientLoginAuthorizer authorizer;
+	private OAuth1Authorizer authorizer;
+	private string? access_token;
 	// Settings file
 	private KeyFile settings_file;
 	private string settings_filename;
-	private string username;
 
 	// SIGNAL HANDLERS
 
@@ -46,75 +46,63 @@ public class MainWin : Window
 
 	[CCode (instance_pos = -1)]
 	public void on_authenticate(Gtk.Action action) {
-		unowned string? password = null;
-		bool cancel = false;
-
-		// See if a password is stored in the keyring
-		GnomeKeyring.find_password(GnomeKeyring.NETWORK_PASSWORD,
-			(res, pass) => {
-				switch(res) {
-					case GnomeKeyring.Result.OK:
-						password = GnomeKeyring.memory_strdup(pass);
-						return;
-					case GnomeKeyring.Result.DENIED:
-					case GnomeKeyring.Result.CANCELLED:
-						cancel = true;
-						return;
-					case GnomeKeyring.Result.NO_MATCH:
-						return;
-					default:
-						warning(@"Problem finding password in Gnome Keyring: $res");
-						return;
-				}
-			},
-			"user", username,
-			"server", "docs.google.com",
-			"protocol", "gdata",
-			"domain", "googledocs2latex",
-			null);
-		if(cancel)
-			return;
-
-		if(username != null)
-			password_dialog.username = username;
-		var response = password_dialog.authenticate();
-		if(response != ResponseType.OK)
-			return;
-		
-		username = password_dialog.username;
-		password = GnomeKeyring.memory_strdup(password_dialog.password);
-		password_dialog.password = "";
-		
 		// Start the Google Docs service and send a request
-		authorizer = new ClientLoginAuthorizer("BetaChi-TestProgram-0.1", typeof(DocumentsService));
+		authorizer = new OAuth1Authorizer("BetaChi-TestProgram-0.1", typeof(DocumentsService));
 		google = new DocumentsService(authorizer);
-		try {
-			authorizer.authenticate(username, password, null);
 
-			// If it worked, save the password in the keyring
-			GnomeKeyring.store_password(GnomeKeyring.NETWORK_PASSWORD,
-				GnomeKeyring.DEFAULT,
-				"Google Account password for GoogleDocs2LaTeX",
-				password,
-				(res) => { },
-				"user", username,
-				"server", "docs.google.com",
-				"protocol", "gdata",
-				"domain", "googledocs2latex",
-				null);
-			// And save the username
-			settings_file.set_string("general", "username", username);
-		} catch(Error e) {
-			error_dialog("There was a problem logging in to your account.",
-				@"Google returned the response: <b>\"$(e.message)\"</b>");
-			return;
-		} finally {
-			GnomeKeyring.memory_free((void *)password);
-			password = null;
-		}
+		// Step 1 of OAuth1 protocol - request a token, token secret, and URI
+		// where the user can grant access to the application
+		statusbar.push(0, "Requesting authentication URI");
+		authorizer.request_authentication_uri_async.begin(null, (obj, res) => {
+			string uri, token, token_secret;
+			statusbar.pop(0);
+			try {
+				uri = authorizer.request_authentication_uri_async.end(res, out token, out token_secret);
+			} catch(Error e) {
+				error_dialog("There was a problem requesting authorization to your account.",
+					@"Google returned the response: <b>\"$(e.message)\"</b>");
+				return;
+			}
 
-		// Now that we are authenticated, load the documents
-		refresh_document_list();
+			// Display the URI in the user's browser
+			try {
+				show_uri(null, uri, get_current_event_time());
+			} catch(Error e) {
+				var clipboard = Clipboard.get(Gdk.SELECTION_CLIPBOARD);
+				clipboard.set_text(uri, -1);
+				error_dialog("Automatically displaying the authentication page didn't work.",
+					@"The error was: <b>\"$(e.message)\"</b>.\n\nThe link <a href='$uri'>$uri</a> has been copied to your clipboard. Please paste it into your browser.");
+			}
+
+			// Ask the user to enter the verification access token
+			var response = password_dialog.authenticate();
+			if(response != ResponseType.OK)
+				return;
+			access_token = password_dialog.access_token;
+
+			// Send the access token and request authorization
+			statusbar.push(0, "Requesting authorization");
+			authorizer.request_authorization_async.begin(token, token_secret, access_token, null, (obj, res) => {
+				statusbar.pop(0);
+				try {
+					if(!authorizer.request_authorization_async.end(res))
+						throw new Error(Quark.from_string("GoogleDocs2LaTeX"), 0, "Request denied");
+				} catch(Error e) {
+					error_dialog("There was a problem requesting authorization to your account.",
+						@"Google returned the response: <b>\"$(e.message)\"</b>");
+					return;
+				}
+
+				// The verification token worked, save it
+				settings_file.set_string("general", "access_token", access_token);
+
+				// Now that we are authorized, load the documents
+				refresh_document_list();
+			});
+
+			// Zero out the secret before freeing
+			Posix.memset((void *)token_secret, 0, token_secret.length);
+		});
 	}
 
 	public void on_quit() {
@@ -134,9 +122,9 @@ public class MainWin : Window
 
 		try {
 			settings_file.load_from_file(settings_filename, KeyFileFlags.NONE);
-			username = settings_file.get_string("general", "username");
+			access_token = settings_file.get_string("general", "access_token");
 		} catch {
-			username = null;
+			access_token = null;
 		}
 
 		try {
