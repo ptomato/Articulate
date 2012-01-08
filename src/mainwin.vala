@@ -105,15 +105,8 @@ public class MainWin : Window
 			// And save the username
 			settings_file.set_string("general", "username", username);
 		} catch(Error e) {
-			var error_dialog = new MessageDialog(this,
-				DialogFlags.MODAL | DialogFlags.DESTROY_WITH_PARENT,
-				MessageType.ERROR, ButtonsType.OK,
-				"There was a problem logging in to your account.");
-			error_dialog.format_secondary_markup("Google returned the response:"
-				+ " <b>\"%s\"</b>", e.message);
-			error_dialog.title = "Google Docs 2 LaTeX";
-			error_dialog.run();
-			error_dialog.destroy();
+			error_dialog("There was a problem logging in to your account.",
+				@"Google returned the response: <b>\"$(e.message)\"</b>");
 			return;
 		} finally {
 			GnomeKeyring.memory_free((void *)password);
@@ -208,5 +201,17 @@ public class MainWin : Window
 			statusbar.pop(0);
 			progressbar.fraction = 0.0;
 		});
+	}
+
+	public void error_dialog(string primary, string secondary) {
+		var error_dialog = new MessageDialog(this,
+			DialogFlags.MODAL | DialogFlags.DESTROY_WITH_PARENT,
+			MessageType.ERROR, ButtonsType.OK,
+			"%s", primary);
+		error_dialog.secondary_use_markup = true;
+		error_dialog.secondary_text = secondary;
+		error_dialog.title = "Google Docs 2 LaTeX";
+		error_dialog.run();
+		error_dialog.destroy();
 	}
 }
