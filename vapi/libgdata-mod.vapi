@@ -1338,40 +1338,25 @@ namespace GData {
 		[CCode (has_construct_function = false)]
 		protected Service ();
 		[NoWrapper]
-		public virtual void append_query_headers (Soup.Message message);
-		public bool delete_entry (GData.Entry entry, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async bool delete_entry_async (GData.Entry entry, GLib.Cancellable? cancellable) throws GLib.Error;
-		public unowned string get_client_id ();
-		public unowned string get_locale ();
-		public unowned string get_password ();
-		public unowned Soup.URI get_proxy_uri ();
-		public uint get_timeout ();
-		public unowned string get_username ();
-		public GData.Entry insert_entry (string upload_uri, GData.Entry entry, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async GData.Entry insert_entry_async (string upload_uri, GData.Entry entry, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool is_authenticated ();
-		[NoWrapper]
-		public virtual bool parse_authentication_response (uint status, string response_body, int length) throws GLib.Error;
+		public virtual void append_query_headers (GData.AuthorizationDomain domain, Soup.Message message);
+		public GLib.List<GData.AuthorizationDomain> get_authorization_domains ();
+		public bool delete_entry (GData.AuthorizationDomain domain, GData.Entry entry, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool delete_entry_async (GData.AuthorizationDomain domain, GData.Entry entry, GLib.Cancellable? cancellable) throws GLib.Error;
+		public GData.Entry insert_entry (GData.AuthorizationDomain domain, string upload_uri, GData.Entry entry, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async GData.Entry insert_entry_async (GData.AuthorizationDomain domain, string upload_uri, GData.Entry entry, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool is_authorized ();
 		[NoWrapper]
 		public virtual void parse_error_response (GData.OperationType operation_type, uint status, string reason_phrase, string response_body, int length) throws GLib.Error;
-		public GData.Feed query (string feed_uri, GData.Query? query, GLib.Type entry_type, GLib.Cancellable? cancellable, GData.QueryProgressCallback progress_callback) throws GLib.Error;
-		public async GData.Feed query_async (string feed_uri, GData.Query? query, GLib.Type entry_type, GLib.Cancellable? cancellable, GData.QueryProgressCallback progress_callback) throws GLib.Error;
-		public GData.Entry query_single_entry (string entry_id, GData.Query? query, GLib.Type entry_type, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async GData.Entry query_single_entry_async (string entry_id, GData.Query? query, GLib.Type entry_type, GLib.Cancellable? cancellable) throws GLib.Error;
-		public void set_locale (string? locale);
-		public void set_proxy_uri (Soup.URI? proxy_uri);
-		public void set_timeout (uint timeout);
-		public GData.Entry update_entry (GData.Entry entry, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async GData.Entry update_entry_async (GData.Entry entry, GLib.Cancellable? cancellable) throws GLib.Error;
-		[NoAccessorMethod]
-		public bool authenticated { get; }
-		public string client_id { get; construct; }
+		public GData.Feed query (GData.AuthorizationDomain domain, string feed_uri, GData.Query? query, GLib.Type entry_type, GLib.Cancellable? cancellable, GData.QueryProgressCallback progress_callback) throws GLib.Error;
+		public async GData.Feed query_async (GData.AuthorizationDomain domain, string feed_uri, GData.Query? query, GLib.Type entry_type, GLib.Cancellable? cancellable, GData.QueryProgressCallback progress_callback) throws GLib.Error;
+		public GData.Entry query_single_entry (GData.AuthorizationDomain domain, string entry_id, GData.Query? query, GLib.Type entry_type, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async GData.Entry query_single_entry_async (GData.AuthorizationDomain domain, string entry_id, GData.Query? query, GLib.Type entry_type, GLib.Cancellable? cancellable) throws GLib.Error;
+		public GData.Entry update_entry (GData.AuthorizationDomain domain, GData.Entry entry, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async GData.Entry update_entry_async (GData.AuthorizationDomain domain, GData.Entry entry, GLib.Cancellable? cancellable) throws GLib.Error;
+		public Authorizer authorizer { get; set; }
 		public string locale { get; set; }
-		public string password { get; }
 		public Soup.URI proxy_uri { get; set; }
 		public uint timeout { get; set; }
-		public string username { get; }
-		public signal string captcha_challenge (string object);
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_upload_stream_get_type ()")]
 	public class UploadStream : GLib.OutputStream {
