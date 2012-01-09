@@ -30,14 +30,15 @@ public class MainWin : Window
 		source.model.get_iter(out iter, path);
 		DocumentsText document;
 		source.model.get(iter, 3, out document, -1);
-		var uri = document.get_download_uri(DocumentsTextFormat.HTML);
-		var stream = new DataInputStream(new DownloadStream(google, null, uri, null));
-		string line;
-
 		var builder = new StringBuilder();
 		try {
-			while((line = stream.read_line(null)) != null)
+			var stream = document.download(google, DocumentsTextFormat.HTML, null);
+			var datastream = new DataInputStream(stream);
+			string line;
+			while((line = datastream.read_line(null)) != null)
 				builder.append(line);
+			datastream.close();
+			stream.close();
 		} catch {
 			print("There was an error\n");
 		}
