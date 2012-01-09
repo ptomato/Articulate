@@ -17,8 +17,8 @@ public class MainWin : Window
 	private OAuth1Authorizer authorizer;
 	private string? access_token;
 	// Settings file
-	private KeyFile settings_file;
-	private string settings_filename;
+	private KeyFile settings;
+	private File settings_file;
 
 	// SIGNAL HANDLERS
 
@@ -30,14 +30,15 @@ public class MainWin : Window
 		source.model.get_iter(out iter, path);
 		DocumentsText document;
 		source.model.get(iter, 3, out document, -1);
-		var uri = document.get_download_uri(DocumentsTextFormat.HTML);
-		var stream = new DataInputStream(new DownloadStream(google, null, uri, null));
-		string line;
-
 		var builder = new StringBuilder();
 		try {
-			while((line = stream.read_line(null)) != null)
+			var stream = document.download(google, DocumentsTextFormat.HTML, null);
+			var datastream = new DataInputStream(stream);
+			string line;
+			while((line = datastream.read_line(null)) != null)
 				builder.append(line);
+			datastream.close();
+			stream.close();
 		} catch {
 			print("There was an error\n");
 		}
@@ -94,7 +95,7 @@ public class MainWin : Window
 				}
 
 				// The verification token worked, save it
-				settings_file.set_string("general", "access_token", access_token);
+				settings.set_string("general", "access_token", access_token);
 
 				// Now that we are authorized, load the documents
 				refresh_document_list();
@@ -107,7 +108,8 @@ public class MainWin : Window
 
 	public void on_quit() {
 		try {
-			FileUtils.set_contents(settings_filename, settings_file.to_data());
+			var text = settings.to_data();
+			settings_file.replace_contents(text, text.length, null, false, FileCreateFlags.NONE, null);
 		} catch(Error e) {
 			warning("Could not save settings file: %s", e.message);
 		}
@@ -117,12 +119,12 @@ public class MainWin : Window
 	// CONSTRUCTOR
 
 	public MainWin() {
-		settings_file = new KeyFile();
-		settings_filename = Path.build_filename(Environment.get_home_dir(),  ".googledocs2latex");
+		settings = new KeyFile();
+		settings_file = File.new_for_path(Environment.get_home_dir()).get_child(".googledocs2latex");
 
 		try {
-			settings_file.load_from_file(settings_filename, KeyFileFlags.NONE);
-			access_token = settings_file.get_string("general", "access_token");
+			settings.load_from_file(settings_file.get_path(), KeyFileFlags.NONE);
+			access_token = settings.get_string("general", "access_token");
 		} catch {
 			access_token = null;
 		}
