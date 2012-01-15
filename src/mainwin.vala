@@ -28,7 +28,11 @@ public class MainWin : Window
 		source.model.get_iter(out iter, path);
 		DocumentsText document;
 		source.model.get(iter, 3, out document, -1);
-		code_view.html_code = google.load_document_contents(document);
+		try {
+			code_view.html_code = google.load_document_contents(document);
+		} catch(Error e) {
+			warning("There was an error: $(e.message)\n");
+		}
 	}
 
 	[CCode (instance_pos = -1)]

@@ -31,19 +31,17 @@ public class GoogleDocs : DocumentsService {
 		this.authorizer = login_authorizer;
 	}
 
-	public string load_document_contents(DocumentsText document) {
-		var uri = document.get_download_uri(DocumentsTextFormat.HTML);
-		var stream = new DataInputStream(new DownloadStream(this, null, uri, null));
-		string line;
-
+	public string load_document_contents(DocumentsText document)
+		throws Error
+	{
 		var builder = new StringBuilder();
-		try {
-			while((line = stream.read_line(null)) != null)
-				builder.append(line);
-		} catch {
-			print("There was an error\n");
-		}
-
+		var stream = document.download(this, DocumentsTextFormat.HTML, null);
+		var datastream = new DataInputStream(stream);
+		string line;
+		while((line = datastream.read_line(null)) != null)
+			builder.append(line);
+		datastream.close();
+		stream.close();
 		return builder.str;
 	}
 
