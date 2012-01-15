@@ -13,12 +13,10 @@ public class MainWin : Window
 	// Dialogs
 	private PasswordDialog password_dialog;
 	// Internet stuff
-	private DocumentsService google;
-	private ClientLoginAuthorizer authorizer;
+	private GoogleDocs google;
 	// Settings file
 	private KeyFile settings;
 	private File settings_file;
-	private string username;
 
 	// SIGNAL HANDLERS
 
@@ -30,88 +28,42 @@ public class MainWin : Window
 		source.model.get_iter(out iter, path);
 		DocumentsText document;
 		source.model.get(iter, 3, out document, -1);
-		var uri = document.get_download_uri(DocumentsTextFormat.HTML);
-		var stream = new DataInputStream(new DownloadStream(google, null, uri, null));
-		string line;
-
-		var builder = new StringBuilder();
-		try {
-			while((line = stream.read_line(null)) != null)
-				builder.append(line);
-		} catch {
-			print("There was an error\n");
-		}
-		code_view.html_code = builder.str;
+		code_view.html_code = google.load_document_contents(document);
 	}
 
 	[CCode (instance_pos = -1)]
 	public void on_authenticate(Gtk.Action action) {
-		unowned string? password = null;
-		bool cancel = false;
-
-		// See if a password is stored in the keyring
-		GnomeKeyring.find_password(GnomeKeyring.NETWORK_PASSWORD,
-			(res, pass) => {
-				switch(res) {
-					case GnomeKeyring.Result.OK:
-						password = GnomeKeyring.memory_strdup(pass);
-						return;
-					case GnomeKeyring.Result.DENIED:
-					case GnomeKeyring.Result.CANCELLED:
-						cancel = true;
-						return;
-					case GnomeKeyring.Result.NO_MATCH:
-						return;
-					default:
-						warning(@"Problem finding password in Gnome Keyring: $res");
-						return;
-				}
-			},
-			"user", username,
-			"server", "docs.google.com",
-			"protocol", "gdata",
-			"domain", "googledocs2latex",
-			null);
-		if(cancel)
-			return;
-
-		if(username != null)
-			password_dialog.username = username;
-		var response = password_dialog.authenticate();
-		if(response != ResponseType.OK)
-			return;
-		
-		username = password_dialog.username;
-		password = GnomeKeyring.memory_strdup(password_dialog.password);
-		password_dialog.password = "";
-		
-		// Start the Google Docs service and send a request
-		authorizer = new ClientLoginAuthorizer("BetaChi-TestProgram-0.1", typeof(DocumentsService));
-		google = new DocumentsService(authorizer);
 		try {
-			authorizer.authenticate(username, password, null);
+			google.find_password_in_keyring();
+		} catch(Error e) {
+			if(e is IOError.CANCELLED)
+				return;
+			warning(@"Error searching for password in keyring: $(e.message)");
+		}
 
-			// If it worked, save the password in the keyring
-			GnomeKeyring.store_password(GnomeKeyring.NETWORK_PASSWORD,
-				GnomeKeyring.DEFAULT,
-				"Google Account password for GoogleDocs2LaTeX",
-				password,
-				(res) => { },
-				"user", username,
-				"server", "docs.google.com",
-				"protocol", "gdata",
-				"domain", "googledocs2latex",
-				null);
-			// And save the username
-			settings.set_string("general", "username", username);
+		if(!google.can_login()) {
+			password_dialog.username = google.username;
+			var response = password_dialog.authenticate();
+			if(response != ResponseType.OK)
+				return;
+		
+			google.username = password_dialog.username;
+			google.password = password_dialog.password;
+			password_dialog.password = "";
+		}
+
+		try {
+			google.login();
 		} catch(Error e) {
 			error_dialog("There was a problem logging in to your account.",
 				@"Google returned the response: <b>\"$(e.message)\"</b>");
 			return;
-		} finally {
-			GnomeKeyring.memory_free((void *)password);
-			password = null;
 		}
+
+		// If it worked, save the password in the keyring
+		google.save_password_in_keyring();
+		// And save the username
+		settings.set_string("general", "username", google.username);
 
 		// Now that we are authenticated, load the documents
 		refresh_document_list();
@@ -130,14 +82,16 @@ public class MainWin : Window
 	// CONSTRUCTOR
 
 	public MainWin() {
+		google = new GoogleDocs();
+
 		settings = new KeyFile();
 		settings_file = File.new_for_path(Environment.get_home_dir()).get_child(".googledocs2latex");
 
 		try {
 			settings.load_from_file(settings_file.get_path(), KeyFileFlags.NONE);
-			username = settings.get_string("general", "username");
+			google.username = settings.get_string("general", "username");
 		} catch {
-			username = null;
+			google.username = null;
 		}
 
 		try {

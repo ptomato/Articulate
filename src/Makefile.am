@@ -4,6 +4,7 @@ googledocs2latex_SOURCES = \
 	main.vala \
 	mainwin.vala \
 	passworddialog.vala \
+	googledocs.vala \
 	codeview.vala \
 	subprocess.vala \
 	semantictransform.vala \
