@@ -65,12 +65,41 @@
   </xsl:for-each>
 </xsl:template>
 
-<!-- Finds out the type of paragraph: regular, figure, displaymath, etc.-->
+<!-- Finds out the type of paragraph: regular, figure, display math, etc.-->
 <xsl:template name="paragraph">
   <xsl:param name="text"/>
-  <p><xsl:call-template name="text">
-    <xsl:with-param name="text" select="$text"/>
-  </xsl:call-template></p>
+  <xsl:choose>
+    <!-- #Figure is a figure -->
+    <xsl:when test="starts-with($text,'#Figure')">
+      <figure>
+        <label><xsl:call-template name="label-name">
+          <xsl:with-param name="text" select="normalize-space(substring-after(substring-before($text,'.'),'#Figure'))"/>
+        </xsl:call-template></label>
+        <caption>
+          <xsl:call-template name="text">
+            <xsl:with-param name="text" select="normalize-space(substring-after($text,'.'))"/>
+          </xsl:call-template>
+        </caption>
+      </figure>
+    </xsl:when>
+    <!-- #Equation is display math -->
+    <xsl:when test="starts-with($text,'#Equation')">
+      <displaymath>
+        <label><xsl:call-template name="label-name">
+          <xsl:with-param name="text" select="normalize-space(substring-after(substring-before($text,'.'),'#Equation'))"/>
+        </xsl:call-template></label>
+        <xsl:call-template name="text">
+          <xsl:with-param name="text" select="normalize-space(substring-after($text,'.'))"/><!-- FIXME -->
+        </xsl:call-template>
+      </displaymath>
+    </xsl:when>
+    <!-- Anything else is a regular paragraph -->
+    <xsl:otherwise>
+      <p><xsl:call-template name="text">
+        <xsl:with-param name="text" select="$text"/>
+      </xsl:call-template></p>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <!-- Processes paragraph-level text -->
@@ -92,6 +121,15 @@
       <xsl:value-of select="$text"/>
     </xsl:otherwise>
   </xsl:choose>
+</xsl:template>
+
+<!-- Makes a figure or equation label out of text -->
+<xsl:template name="label-name">
+  <xsl:param name="text"/>
+  <!-- To compensate for XPath 1.0's lack of a lowercasing function -->
+  <xsl:variable name="lc">abcdefghijklmnopqrstuvwxyz</xsl:variable>
+  <xsl:variable name="uc">ABCDEFGHIJKLMNOPQRSTUVWXYZ</xsl:variable>
+  <xsl:value-of select="translate(translate($text,$uc,$lc),' ','-')"/>
 </xsl:template>
 
 </xsl:stylesheet>
