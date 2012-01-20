@@ -88,9 +88,11 @@
         <label><xsl:call-template name="label-name">
           <xsl:with-param name="text" select="normalize-space(substring-after(substring-before($text,'.'),'#Equation'))"/>
         </xsl:call-template></label>
-        <xsl:call-template name="text">
-          <xsl:with-param name="text" select="normalize-space(substring-after($text,'.'))"/><!-- FIXME -->
-        </xsl:call-template>
+        <math>
+          <xsl:call-template name="text">
+            <xsl:with-param name="text" select="normalize-space(substring-after($text,'.'))"/><!-- FIXME -->
+          </xsl:call-template>
+        </math>
       </displaymath>
     </xsl:when>
     <!-- Anything else is a regular paragraph -->

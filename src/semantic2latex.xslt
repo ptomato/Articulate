@@ -64,7 +64,7 @@
   <xsl:text>}
 
 </xsl:text>
-  <xsl:apply-templates select="./p"/>
+  <xsl:apply-templates select="./p|./figure|./displaymath"/>
 </xsl:template>
 
 <xsl:template match="p">
@@ -77,6 +77,31 @@
     <xsl:text>
 </xsl:text>
   </xsl:if>
+</xsl:template>
+
+<xsl:template match="figure">
+  <xsl:text>\begin{figure}
+  \caption{</xsl:text>
+  <xsl:value-of select="./caption"/>
+  <xsl:text>}
+  \label{fig:</xsl:text>
+  <xsl:value-of select="./label"/>
+  <xsl:text>}
+\end{figure}
+
+</xsl:text>
+</xsl:template>
+
+<xsl:template match="displaymath">
+  <xsl:text>\begin{equation}\label{</xsl:text>
+  <xsl:value-of select="./label"/>
+  <xsl:text>}
+</xsl:text>
+  <xsl:value-of select="./math"/>
+  <xsl:text>
+\end{equation}
+
+</xsl:text>
 </xsl:template>
 
 </xsl:stylesheet>
