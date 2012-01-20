@@ -127,7 +127,7 @@ public class MainWin : Window
 	public void refresh_document_list() {
 		assert(google.is_authorized());
 		var query = new DocumentsQuery("");
-		query.show_folders = true;
+		query.show_folders = false;
 		statusbar.push(0, "Getting documents feed");
 		google.query_documents_async.begin(query, null, (doc, count, total) => {
 			// Progress callback
@@ -136,16 +136,7 @@ public class MainWin : Window
 			} else {
 				progressbar.pulse();
 			}
-			if(doc is DocumentsFolder) {
-				TreeIter iter;
-				documents.append(out iter, null);
-				documents.set(iter,
-					0, doc.title,
-					1, doc.id,
-					2, "folder",
-					3, doc,
-					-1);
-			} else if(doc is DocumentsText) {
+			if(doc is DocumentsText) {
 				TreeIter iter;
 				documents.append(out iter, null);
 				documents.set(iter,
