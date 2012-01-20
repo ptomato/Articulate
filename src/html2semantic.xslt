@@ -54,13 +54,44 @@
 	          </item>
 	        </xsl:when>
 	        <xsl:otherwise>
-	          <p><xsl:value-of select="$trim-content"/></p>
+	          <xsl:call-template name="paragraph">
+	            <xsl:with-param name="text" select="$trim-content"/>
+	          </xsl:call-template>
 	        </xsl:otherwise>
 	      </xsl:choose>
 	    </xsl:if>
       </xsl:for-each>
     </xsl:element>
   </xsl:for-each>
+</xsl:template>
+
+<!-- Finds out the type of paragraph: regular, figure, displaymath, etc.-->
+<xsl:template name="paragraph">
+  <xsl:param name="text"/>
+  <p><xsl:call-template name="text">
+    <xsl:with-param name="text" select="$text"/>
+  </xsl:call-template></p>
+</xsl:template>
+
+<!-- Processes paragraph-level text -->
+<xsl:template name="text">
+  <xsl:param name="text"/>
+  <xsl:choose>
+    <!-- [Author2012] => <cite>Author2012</cite> -->
+    <xsl:when test="contains($text,'[') and contains(substring-after($text,'['),']')">
+      <xsl:call-template name="text">
+        <xsl:with-param name="text" select="substring-before($text,'[')"/>
+      </xsl:call-template>
+      <cite><xsl:value-of select="substring-after(substring-before($text,']'),'[')"/></cite>
+      <xsl:call-template name="text">
+        <xsl:with-param name="text" select="substring-after($text,']')"/>
+      </xsl:call-template>
+    </xsl:when>
+    <!-- regular text -->
+    <xsl:otherwise>
+      <xsl:value-of select="$text"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 </xsl:stylesheet>
