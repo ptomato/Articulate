@@ -1,6 +1,6 @@
 public class LaTeXTransform 
 {
-	public async string process(string input)
+	public string process(string input)
 	throws IOError
 	{
 		var document = Xml.Parser.parse_doc(input);

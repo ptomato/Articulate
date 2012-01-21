@@ -1,6 +1,6 @@
 public class SemanticTransform 
 {
-	public async string process(string input)
+	public string process(string input)
 	throws IOError
 	{
 		Exslt.register_all();
