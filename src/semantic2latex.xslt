@@ -68,7 +68,7 @@
 </xsl:template>
 
 <xsl:template match="p">
-  <xsl:value-of select="normalize-space(.)"/>
+  <xsl:apply-templates mode="inline"/>
   <!--Add a newline-->
   <xsl:text>
 </xsl:text>
@@ -102,6 +102,17 @@
 \end{equation}
 
 </xsl:text>
+</xsl:template>
+
+<!-- Templates for inline mode -->
+<xsl:template mode="inline" match="text()">
+  <xsl:value-of select="normalize-space()"/>
+</xsl:template>
+
+<xsl:template mode="inline" match="cite">
+  <xsl:text>\cite{</xsl:text>
+  <xsl:value-of select="."/>
+  <xsl:text>}</xsl:text>
 </xsl:template>
 
 </xsl:stylesheet>
