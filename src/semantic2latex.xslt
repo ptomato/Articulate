@@ -18,8 +18,8 @@
 </xsl:template>
 
 <xsl:template match="/document/preamble">
-  <xsl:apply-templates select="./title"/>
-  <xsl:apply-templates select="./authors"/>
+  <xsl:apply-templates select="title"/>
+  <xsl:apply-templates select="authors"/>
   <xsl:text>\date{}
 \maketitle
 
@@ -35,7 +35,7 @@
 
 <xsl:template match="/document/preamble/authors">
   <xsl:text>\author{</xsl:text>
-  <xsl:for-each select="./author">
+  <xsl:for-each select="author">
     <xsl:value-of select="translate(., ' ', '~')"/>
     <xsl:if test="position() != last()">
       <xsl:text> \and </xsl:text>
@@ -46,13 +46,13 @@
 </xsl:template>
 
 <xsl:template match="/document/body">
-  <xsl:apply-templates select="./abstract|./section|./p"/>
+  <xsl:apply-templates select="abstract|section|p"/>
 </xsl:template>
 
 <xsl:template match="/document/body/abstract">
   <xsl:text>\begin{abstract}
 </xsl:text>
-  <xsl:apply-templates select="./p"/>
+  <xsl:apply-templates select="p"/>
   <xsl:text>\end{abstract}
 
 </xsl:text>
@@ -64,7 +64,7 @@
   <xsl:text>}
 
 </xsl:text>
-  <xsl:apply-templates select="./p|./figure|./displaymath"/>
+  <xsl:apply-templates select="p|figure|displaymath"/>
 </xsl:template>
 
 <xsl:template match="p">
@@ -82,10 +82,10 @@
 <xsl:template match="figure">
   <xsl:text>\begin{figure}
   \caption{</xsl:text>
-  <xsl:value-of select="./caption"/>
+  <xsl:value-of select="caption"/>
   <xsl:text>}
   \label{fig:</xsl:text>
-  <xsl:value-of select="./label"/>
+  <xsl:value-of select="label"/>
   <xsl:text>}
 \end{figure}
 
@@ -94,10 +94,10 @@
 
 <xsl:template match="displaymath">
   <xsl:text>\begin{equation}\label{</xsl:text>
-  <xsl:value-of select="./label"/>
+  <xsl:value-of select="label"/>
   <xsl:text>}
 </xsl:text>
-  <xsl:value-of select="./math"/>
+  <xsl:value-of select="math"/>
   <xsl:text>
 \end{equation}
 
