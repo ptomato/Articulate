@@ -47,6 +47,8 @@ public class CodeView : VBox
 	// Widget pointers
 	private ComboBox stage_selector;
 	private SourceView code_view;
+	private InfoBar info_bar;
+	private Label info_label;
 	// Content
 	private SourceBuffer content;
 	private string code[5];
@@ -117,8 +119,15 @@ public class CodeView : VBox
 		var smanager = SourceStyleSchemeManager.get_default();
 		content.style_scheme = smanager.get_scheme("tango");
 		
+		info_bar = new InfoBar();
+		info_bar.no_show_all = true;
+		info_label = new Label("");
+		info_label.show();
+
 		// Put widgets together
 		scrollwin.add(code_view);
+		(info_bar.get_content_area() as Container).add(info_label);
+		this.pack_start(info_bar, false, false);
 		this.pack_start(stage_selector, false, false);
 		this.pack_start(scrollwin);
 	}
@@ -132,6 +141,13 @@ public class CodeView : VBox
 	
 	public void show_code(Repr repr) {
 		stage_selector.active = repr;
+	}
+
+	public void display_error(string text) {
+		info_bar.message_type = MessageType.ERROR;
+		info_label.label = text;
+		info_bar.show();
+		info_bar.close.connect(() => { hide(); });
 	}
 }
 
