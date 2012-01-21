@@ -87,7 +87,7 @@
   \caption{</xsl:text>
   <xsl:value-of select="caption"/>
   <xsl:text>}
-  \label{fig:</xsl:text>
+  \label{</xsl:text>
   <xsl:value-of select="label"/>
   <xsl:text>}
 \end{figure}
@@ -119,6 +119,12 @@
   <xsl:text>$</xsl:text>
   <xsl:apply-templates mode="math"/>
   <xsl:text>$</xsl:text>
+</xsl:template>
+
+<xsl:template mode="inline" match="ref">
+  <xsl:text>\ref{</xsl:text>
+  <xsl:value-of select="@label"/>
+  <xsl:text>}</xsl:text>
 </xsl:template>
 
 <!-- Templates for math mode -->
