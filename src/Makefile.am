@@ -6,7 +6,6 @@ googledocs2latex_SOURCES = \
 	passworddialog.vala \
 	googledocs.vala \
 	codeview.vala \
-	subprocess.vala \
 	semantictransform.vala \
 	latextransform.vala
 
