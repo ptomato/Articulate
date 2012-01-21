@@ -9,6 +9,9 @@
 <xsl:template match="/">
   <xsl:text>\documentclass[a4paper]{article}
 
+\newcommand{\unit}[1]{\mbox{$\;\mathrm{#1}$}}
+\newcommand{\micro}{\mbox{\textmu}}
+
 \begin{document}
 
 </xsl:text>
@@ -97,7 +100,7 @@
   <xsl:value-of select="label"/>
   <xsl:text>}
 </xsl:text>
-  <xsl:value-of select="math"/>
+  <xsl:apply-templates mode="math" select="math"/>
   <xsl:text>
 \end{equation}
 
@@ -105,13 +108,36 @@
 </xsl:template>
 
 <!-- Templates for inline mode -->
-<xsl:template mode="inline" match="text()">
-  <xsl:value-of select="normalize-space()"/>
-</xsl:template>
 
 <xsl:template mode="inline" match="cite">
   <xsl:text>\cite{</xsl:text>
   <xsl:value-of select="."/>
+  <xsl:text>}</xsl:text>
+</xsl:template>
+
+<xsl:template mode="inline" match="math">
+  <xsl:text>$</xsl:text>
+  <xsl:apply-templates mode="math"/>
+  <xsl:text>$</xsl:text>
+</xsl:template>
+
+<!-- Templates for math mode -->
+
+<xsl:template mode="math" match="sup">
+  <xsl:text>^{</xsl:text>
+  <xsl:apply-templates mode="math"/>
+  <xsl:text>}</xsl:text>
+</xsl:template>
+
+<xsl:template mode="math" match="sub">
+  <xsl:text>_{</xsl:text>
+  <xsl:apply-templates mode="math"/>
+  <xsl:text>}</xsl:text>
+</xsl:template>
+
+<xsl:template mode="math" match="unit">
+  <xsl:text>\unit{</xsl:text>
+  <xsl:apply-templates mode="math"/>
   <xsl:text>}</xsl:text>
 </xsl:template>
 
