@@ -123,7 +123,7 @@ public class CodeView : VBox
 		var smanager = SourceStyleSchemeManager.get_default();
 		content.style_scheme = smanager.get_scheme("tango");
 		
-		info_bar = new InfoBar();
+		info_bar = new InfoBar.with_buttons(Stock.CLOSE, ResponseType.CLOSE);
 		info_bar.no_show_all = true;
 		info_label = new Label("");
 		info_label.show();
@@ -151,7 +151,7 @@ public class CodeView : VBox
 		info_bar.message_type = MessageType.ERROR;
 		info_label.label = text;
 		info_bar.show();
-		info_bar.close.connect(() => { hide(); });
+		info_bar.response.connect((w, res) => { w.hide(); });
 	}
 }
 
