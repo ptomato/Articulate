@@ -3,15 +3,25 @@
 <xsl:stylesheet version="1.0"
    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
+<xsl:param name="document-options">a4paper</xsl:param>
+<xsl:param name="packages"/>
+<xsl:param name="preamble-commands"/>
+
 <xsl:output method="text" indent="no"/>
 <xsl:strip-space elements="*"/>
 
 <xsl:template match="/">
-  <xsl:text>\documentclass[a4paper]{article}
-
+  <xsl:text>\documentclass[</xsl:text>
+  <xsl:value-of select="$document-options"/>
+  <xsl:text>]{article}
+</xsl:text>
+  <xsl:value-of select="$packages"/>
+  <xsl:text>
 \newcommand{\unit}[1]{\mbox{$\;\mathrm{#1}$}}
 \newcommand{\micro}{\mbox{\textmu}}
-
+</xsl:text>
+  <xsl:value-of select="$preamble-commands"/>
+<xsl:text>
 \begin{document}
 
 </xsl:text>
