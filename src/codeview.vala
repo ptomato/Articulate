@@ -4,7 +4,6 @@ using Gtk;
 public enum Repr {
 	RAW_HTML,
 	SEMANTIC_XML,
-	LATEX_UTF8_INSERTS,
 	LATEX_UTF8,
 	FINAL_LATEX;
 
@@ -14,8 +13,6 @@ public enum Repr {
 				return "Raw HTML from Google Docs";
 			case SEMANTIC_XML:
 				return "Semantic XML";
-			case LATEX_UTF8_INSERTS:
-				return "LaTeX with UTF-8 and inserts";
 			case LATEX_UTF8:
 				return "LaTeX with UTF-8";
 			case FINAL_LATEX:
@@ -38,7 +35,7 @@ public enum Repr {
 	}
 
 	public static Repr[] all() {
-		return { RAW_HTML, SEMANTIC_XML, LATEX_UTF8_INSERTS, LATEX_UTF8, FINAL_LATEX };
+		return { RAW_HTML, SEMANTIC_XML, LATEX_UTF8, FINAL_LATEX };
 	}
 }
 
@@ -51,7 +48,7 @@ public class CodeView : VBox
 	private Label info_label;
 	// Content
 	private SourceBuffer content;
-	private string code[5];
+	private string code[4];
 	public string html_code { 
 		get {
 			return code[Repr.RAW_HTML];
@@ -76,7 +73,7 @@ public class CodeView : VBox
 			code[Repr.SEMANTIC_XML] = value;
 			var transform = new LaTeXTransform();
 			try {
-				latex_code_utf8_inserts = transform.process(code[Repr.SEMANTIC_XML]);
+				latex_code_utf8 = transform.process(code[Repr.SEMANTIC_XML]);
 			} catch(IOError e) {
 				display_error(e.message);
 			}
@@ -84,18 +81,32 @@ public class CodeView : VBox
 				content.text = code[Repr.SEMANTIC_XML];
 		}
 	}
-	public string latex_code_utf8_inserts {
+	public string latex_code_utf8 {
 		get {
-			return code[Repr.LATEX_UTF8_INSERTS];
+			return code[Repr.LATEX_UTF8];
 		}
 		set {
-			code[Repr.LATEX_UTF8_INSERTS] = value;
-			if(stage_selector.active == Repr.LATEX_UTF8_INSERTS)
-				content.text = code[Repr.LATEX_UTF8_INSERTS];
+			code[Repr.LATEX_UTF8] = value;
+			var transform = new UTF8Transform();
+			try {
+				latex_code = transform.process(code[Repr.LATEX_UTF8]);
+			} catch(RegexError e) {
+				display_error(e.message);
+			}
+			if(stage_selector.active == Repr.LATEX_UTF8)
+				content.text = code[Repr.LATEX_UTF8];
 		}
 	}
-	public string latex_code_utf8;
-	public string latex_code;
+	public string latex_code {
+		get {
+			return code[Repr.FINAL_LATEX];
+		}
+		set {
+			code[Repr.FINAL_LATEX] = value;
+			if(stage_selector.active == Repr.FINAL_LATEX)
+				content.text = code[Repr.FINAL_LATEX];
+		}
+	}
 	
 	// SIGNAL HANDLERS
 	

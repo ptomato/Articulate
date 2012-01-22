@@ -7,7 +7,8 @@ googledocs2latex_SOURCES = \
 	googledocs.vala \
 	codeview.vala \
 	semantictransform.vala \
-	latextransform.vala
+	latextransform.vala \
+	utf8transform.vala
 
 INCLUDES = \
 	-include config.h \
