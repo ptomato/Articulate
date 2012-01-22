@@ -73,6 +73,10 @@ public class MainWin : Window
 		refresh_document_list();
 	}
 
+	[CCode (instance_pos = -1)]
+	public void on_options(Gtk.Action action) {
+	}
+
 	public void on_quit() {
 		try {
 			var text = settings.to_data();

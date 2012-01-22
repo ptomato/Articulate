@@ -9,6 +9,13 @@
     <property name="stock_id">gtk-dialog-authentication</property>
     <signal name="activate" handler="main_win_on_authenticate" swapped="no"/>
   </object>
+  <object class="GtkAction" id="options">
+    <property name="label">Document Options...</property>
+    <property name="short_label">Options</property>
+    <property name="tooltip">Set options for the document, like preamble code</property>
+    <property name="stock_id">gtk-properties</property>
+    <signal name="activate" handler="main_win_on_options" swapped="no"/>
+  </object>
   <object class="GtkVBox" id="frame">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -21,6 +28,18 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="related_action">authenticate</property>
+            <property name="use_underline">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="toolbutton2">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="related_action">options</property>
             <property name="use_underline">True</property>
           </object>
           <packing>
