@@ -123,14 +123,14 @@ public class CodeView : VBox
 		stage_selector = new ComboBox.text();
 		foreach(Repr repr in Repr.all())
 			stage_selector.append_text(repr.to_string());
-		stage_selector.active = Repr.RAW_HTML;
+		stage_selector.active = Repr.FINAL_LATEX;
 		stage_selector.changed.connect(on_stage_selector_changed);
 		
 		var scrollwin = new ScrolledWindow(null, null);
 		code_view = new SourceView();
 		code_view.wrap_mode = WrapMode.CHAR;
 		content = code_view.buffer as SourceBuffer;
-		content.language = Repr.RAW_HTML.get_language();
+		content.language = Repr.FINAL_LATEX.get_language();
 		var smanager = SourceStyleSchemeManager.get_default();
 		content.style_scheme = smanager.get_scheme("tango");
 		
