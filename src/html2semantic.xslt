@@ -136,6 +136,17 @@
 <!-- Don't process math elements that are preceded by another math element -->
 <xsl:template match="span[contains(@class,'c1') and preceding-sibling::span[1][contains(@class,'c1')]]"/> <!-- Do nothing -->
 
+<!-- Match references -->
+<xsl:template match="span[child::a]">
+  <ref>
+    <xsl:attribute name="label">
+      <xsl:call-template name="label-name">
+        <xsl:with-param name="text" select="a/text()"/>
+      </xsl:call-template>
+    </xsl:attribute>
+  </ref>
+</xsl:template>
+
 <xsl:template match="span">
   <xsl:call-template name="text">
     <xsl:with-param name="text" select="text()"/>
