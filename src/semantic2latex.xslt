@@ -14,6 +14,7 @@
   <xsl:text>\documentclass[</xsl:text>
   <xsl:value-of select="$document-options"/>
   <xsl:text>]{article}
+\usepackage{textcomp} % for \textmu
 </xsl:text>
   <xsl:value-of select="$packages"/>
   <xsl:text>
@@ -70,13 +71,12 @@
 </xsl:text>
 </xsl:template>
 
-<xsl:template match="/document/body/section">
+<xsl:template match="/document/body/section/title">
   <xsl:text>\section{</xsl:text>
-  <xsl:value-of select="./title"/>
+  <xsl:value-of select="."/>
   <xsl:text>}
 
 </xsl:text>
-  <xsl:apply-templates/>
 </xsl:template>
 
 <xsl:template match="/document/body/bibliography">
@@ -84,11 +84,11 @@
 \begin{thebibliography}{99}
 
 </xsl:text>
-  <xsl:for-each select="child::item">
+  <xsl:for-each select="item">
     <xsl:text>\bibitem{</xsl:text>
-    <xsl:value-of select="child::citekey"/>
+    <xsl:value-of select="citekey"/>
     <xsl:text>} </xsl:text>
-    <xsl:value-of select="child::p"/>
+    <xsl:value-of select="p"/>
     <xsl:text>
 
 </xsl:text>
@@ -103,7 +103,7 @@
   <xsl:text>
 </xsl:text>
   <!--Add an extra newline if there is another paragraph following this one-->
-  <xsl:if test="following-sibling::p">
+  <xsl:if test="following-sibling::p or following-sibling::displaymath">
     <xsl:text>
 </xsl:text>
   </xsl:if>
