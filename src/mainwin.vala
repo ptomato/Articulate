@@ -12,6 +12,7 @@ public class MainWin : Window
 	private CodeView code_view;
 	// Dialogs
 	private PasswordDialog password_dialog;
+	private OptionsDialog options_dialog;
 	// Internet stuff
 	private GoogleDocs google;
 	// Settings file
@@ -75,6 +76,8 @@ public class MainWin : Window
 
 	[CCode (instance_pos = -1)]
 	public void on_options(Gtk.Action action) {
+		options_dialog.run();
+		options_dialog.hide();
 	}
 
 	public void on_quit() {
@@ -117,6 +120,7 @@ public class MainWin : Window
 			pane.add2(code_view);
 
 			password_dialog = new PasswordDialog(builder, this);
+			options_dialog = new OptionsDialog();
 		} catch(Error e) {
 			error("Could not load UI: %s\n", e.message);
 		}
