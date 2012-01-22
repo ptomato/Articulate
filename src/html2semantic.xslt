@@ -89,23 +89,19 @@
           <xsl:with-param name="text" select="normalize-space(substring-after(substring-before($text,'.'),'#Equation'))"/>
         </xsl:call-template></label>
         <math>
-          <xsl:call-template name="text">
-            <xsl:with-param name="text" select="normalize-space(substring-after($text,'.'))"/><!-- FIXME -->
-          </xsl:call-template>
+          <xsl:value-of select="normalize-space(substring-after($text,'.'))"/>
+          <xsl:apply-templates mode="math" select="child::span[position() != 1]"/>
         </math>
       </displaymath>
     </xsl:when>
     <!-- Anything else is a regular paragraph -->
     <xsl:otherwise>
-      <p><xsl:apply-templates/></p>
+      <p><xsl:apply-templates mode="paragraph"/></p>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
 
-<xsl:variable name="italic-class">c1</xsl:variable>
-<xsl:variable name="subscript-class">c3</xsl:variable>
-
-<xsl:template match="span[contains(@class,'c1') and preceding-sibling::span[1][not(contains(@class,'c1'))]]">
+<xsl:template mode="paragraph" match="span[contains(@class,'c1') and preceding-sibling::span[1][not(contains(@class,'c1'))]]">
   <math><xsl:value-of select="text()"/>
     <xsl:call-template name="continue-math">
       <xsl:with-param name="next" select="following-sibling::span[1]"/>
@@ -117,14 +113,7 @@
   <xsl:param name="next"/>
   <xsl:choose>
     <xsl:when test="$next[contains(@class,'c1')]">
-      <xsl:choose>
-        <xsl:when test="$next[contains(@class,'c3')]">
-          <sub><xsl:value-of select="$next/text()"/></sub>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="$next/text()"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:apply-templates mode="math" select="$next"/>
       <xsl:call-template name="continue-math">
         <xsl:with-param name="next" select="$next/following-sibling::span[1]"/>
       </xsl:call-template>
@@ -134,10 +123,10 @@
 </xsl:template>
 
 <!-- Don't process math elements that are preceded by another math element -->
-<xsl:template match="span[contains(@class,'c1') and preceding-sibling::span[1][contains(@class,'c1')]]"/> <!-- Do nothing -->
+<xsl:template mode="paragraph" match="span[contains(@class,'c1') and preceding-sibling::span[1][contains(@class,'c1')]]"/> <!-- Do nothing -->
 
 <!-- Match references -->
-<xsl:template match="span[child::a]">
+<xsl:template mode="paragraph" match="span[child::a]">
   <ref>
     <xsl:attribute name="label">
       <xsl:call-template name="label-name">
@@ -147,10 +136,22 @@
   </ref>
 </xsl:template>
 
-<xsl:template match="span">
+<xsl:template mode="paragraph" match="span">
   <xsl:call-template name="text">
     <xsl:with-param name="text" select="text()"/>
   </xsl:call-template>
+</xsl:template>
+
+<xsl:template mode="math" match="span[contains(@class,'c3')]">
+  <sub><xsl:value-of select="text()"/></sub>
+</xsl:template>
+
+<xsl:template mode="math" match="span[contains(@class,'c8')]">
+  <sup><xsl:value-of select="text()"/></sup>
+</xsl:template>
+
+<xsl:template mode="math" match="span">
+  <xsl:value-of select="text()"/>
 </xsl:template>
 
 <!-- Processes paragraph-level text -->
