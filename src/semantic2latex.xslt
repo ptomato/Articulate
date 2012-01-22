@@ -21,8 +21,7 @@
 </xsl:template>
 
 <xsl:template match="/document/preamble">
-  <xsl:apply-templates select="title"/>
-  <xsl:apply-templates select="authors"/>
+  <xsl:apply-templates/>
   <xsl:text>\date{}
 \maketitle
 
@@ -49,13 +48,13 @@
 </xsl:template>
 
 <xsl:template match="/document/body">
-  <xsl:apply-templates select="abstract|section|p|bibliography"/>
+  <xsl:apply-templates/>
 </xsl:template>
 
 <xsl:template match="/document/body/abstract">
   <xsl:text>\begin{abstract}
 </xsl:text>
-  <xsl:apply-templates select="p"/>
+  <xsl:apply-templates/>
   <xsl:text>\end{abstract}
 
 </xsl:text>
@@ -67,7 +66,7 @@
   <xsl:text>}
 
 </xsl:text>
-  <xsl:apply-templates select="p|figure|displaymath"/>
+  <xsl:apply-templates/>
 </xsl:template>
 
 <xsl:template match="/document/body/bibliography">
