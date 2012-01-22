@@ -97,11 +97,49 @@
     </xsl:when>
     <!-- Anything else is a regular paragraph -->
     <xsl:otherwise>
-      <p><xsl:call-template name="text">
-        <xsl:with-param name="text" select="$text"/>
-      </xsl:call-template></p>
+      <p><xsl:apply-templates/></p>
     </xsl:otherwise>
   </xsl:choose>
+</xsl:template>
+
+<xsl:variable name="italic-class">c1</xsl:variable>
+<xsl:variable name="subscript-class">c3</xsl:variable>
+
+<xsl:template match="span[contains(@class,'c1') and preceding-sibling::span[1][not(contains(@class,'c1'))]]">
+  <math><xsl:value-of select="text()"/>
+    <xsl:call-template name="continue-math">
+      <xsl:with-param name="next" select="following-sibling::span[1]"/>
+    </xsl:call-template>
+  </math>
+</xsl:template>
+
+<xsl:template name="continue-math">
+  <xsl:param name="next"/>
+  <xsl:choose>
+    <xsl:when test="$next[contains(@class,'c1')]">
+      <xsl:choose>
+        <xsl:when test="$next[contains(@class,'c3')]">
+          <sub><xsl:value-of select="$next/text()"/></sub>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$next/text()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:call-template name="continue-math">
+        <xsl:with-param name="next" select="$next/following-sibling::span[1]"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise/> <!-- Do nothing -->
+  </xsl:choose>
+</xsl:template>
+
+<!-- Don't process math elements that are preceded by another math element -->
+<xsl:template match="span[contains(@class,'c1') and preceding-sibling::span[1][contains(@class,'c1')]]"/> <!-- Do nothing -->
+
+<xsl:template match="span">
+  <xsl:call-template name="text">
+    <xsl:with-param name="text" select="text()"/>
+  </xsl:call-template>
 </xsl:template>
 
 <!-- Processes paragraph-level text -->
