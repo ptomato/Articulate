@@ -49,7 +49,7 @@
 </xsl:template>
 
 <xsl:template match="/document/body">
-  <xsl:apply-templates select="abstract|section|p"/>
+  <xsl:apply-templates select="abstract|section|p|bibliography"/>
 </xsl:template>
 
 <xsl:template match="/document/body/abstract">
@@ -68,6 +68,24 @@
 
 </xsl:text>
   <xsl:apply-templates select="p|figure|displaymath"/>
+</xsl:template>
+
+<xsl:template match="/document/body/bibliography">
+  <xsl:text>
+\begin{thebibliography}{99}
+
+</xsl:text>
+  <xsl:for-each select="child::item">
+    <xsl:text>\bibitem{</xsl:text>
+    <xsl:value-of select="child::citekey"/>
+    <xsl:text>} </xsl:text>
+    <xsl:value-of select="child::p"/>
+    <xsl:text>
+
+</xsl:text>
+  </xsl:for-each>
+  <xsl:text>\end{thebibiliography}
+</xsl:text>
 </xsl:template>
 
 <xsl:template match="p">
