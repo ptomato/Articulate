@@ -7,6 +7,12 @@
 
 <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
 
+<!-- These parameters have to be found out by peeking in the CSS?
+Or is there a way to do it from within the XSLT code? -->
+<xsl:param name="italic-class">c1</xsl:param>
+<xsl:param name="subscript-class">c2</xsl:param>
+<xsl:param name="superscript-class">c3</xsl:param>
+
 <xsl:template match="/">
   <document>
     <xsl:apply-templates mode="preamble" select="/html/body"/>
@@ -101,30 +107,6 @@
   </xsl:choose>
 </xsl:template>
 
-<xsl:template mode="paragraph" match="span[contains(@class,'c1') and preceding-sibling::span[1][not(contains(@class,'c1'))]]">
-  <math><xsl:value-of select="text()"/>
-    <xsl:call-template name="continue-math">
-      <xsl:with-param name="next" select="following-sibling::span[1]"/>
-    </xsl:call-template>
-  </math>
-</xsl:template>
-
-<xsl:template name="continue-math">
-  <xsl:param name="next"/>
-  <xsl:choose>
-    <xsl:when test="$next[contains(@class,'c1')]">
-      <xsl:apply-templates mode="math" select="$next"/>
-      <xsl:call-template name="continue-math">
-        <xsl:with-param name="next" select="$next/following-sibling::span[1]"/>
-      </xsl:call-template>
-    </xsl:when>
-    <xsl:otherwise/> <!-- Do nothing -->
-  </xsl:choose>
-</xsl:template>
-
-<!-- Don't process math elements that are preceded by another math element -->
-<xsl:template mode="paragraph" match="span[contains(@class,'c1') and preceding-sibling::span[1][contains(@class,'c1')]]"/> <!-- Do nothing -->
-
 <!-- Match references -->
 <xsl:template mode="paragraph" match="span[child::a]">
   <ref>
@@ -137,21 +119,52 @@
 </xsl:template>
 
 <xsl:template mode="paragraph" match="span">
-  <xsl:call-template name="text">
-    <xsl:with-param name="text" select="text()"/>
-  </xsl:call-template>
+  <!-- Only process math elements that are not preceded by another math element -->
+  <xsl:choose>
+    <xsl:when test="contains(@class,$italic-class)">
+      <xsl:if test="preceding-sibling::span[1][not(contains(@class,$italic-class))]">
+        <math><xsl:value-of select="text()"/>
+          <xsl:call-template name="continue-math">
+            <xsl:with-param name="next" select="following-sibling::span[1]"/>
+          </xsl:call-template>
+        </math>
+      </xsl:if>
+    </xsl:when>
+    <!-- Not a math element -->
+    <xsl:otherwise>
+      <xsl:call-template name="text">
+        <xsl:with-param name="text" select="text()"/>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
-<xsl:template mode="math" match="span[contains(@class,'c3')]">
-  <sub><xsl:value-of select="text()"/></sub>
+<xsl:template name="continue-math">
+  <xsl:param name="next"/>
+  <xsl:choose>
+    <xsl:when test="$next[contains(@class,$italic-class)]">
+      <xsl:apply-templates mode="math" select="$next"/>
+      <xsl:call-template name="continue-math">
+        <xsl:with-param name="next" select="$next/following-sibling::span[1]"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise/> <!-- Do nothing -->
+  </xsl:choose>
 </xsl:template>
 
-<xsl:template mode="math" match="span[contains(@class,'c8')]">
-  <sup><xsl:value-of select="text()"/></sup>
-</xsl:template>
-
+<!-- XSLT 1.0 doesn't allow parameters in match expressions, annoying -->
 <xsl:template mode="math" match="span">
-  <xsl:value-of select="text()"/>
+  <xsl:choose>
+    <xsl:when test="contains(@class,$subscript-class)">
+      <sub><xsl:value-of select="text()"/></sub>
+    </xsl:when>
+    <xsl:when test="contains(@class,$superscript-class)">
+      <sup><xsl:value-of select="text()"/></sup>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="text()"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <!-- Processes paragraph-level text -->
