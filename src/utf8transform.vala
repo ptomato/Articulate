@@ -43,6 +43,16 @@ public class UTF8Transform
 		{ 0x03C8, "\\psi" },
 		{ 0x03C9, "\\omega" },
 		
+		{ 0x2018, "`" }, // left single quote
+		{ 0x2019, "'" }, // right single quote
+		{ 0x201C, "``" }, // left double quote
+		{ 0x201D, "''" }, // right double quote
+
+		{ 0x207A, "$^+$" }, // text mode, superscript plus
+
+		{ 0x210F, "\\hbar" },
+
+		{ 0x2212, "-" }, // math mode, minus sign
 		{ 0x221A, "\\sqrt" },
 		{ 0x221D, "\\propto" },
 		{ 0x2248, "\\approx" }
