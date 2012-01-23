@@ -93,7 +93,7 @@
 
 </xsl:text>
   </xsl:for-each>
-  <xsl:text>\end{thebibiliography}
+  <xsl:text>\end{thebibliography}
 </xsl:text>
 </xsl:template>
 
