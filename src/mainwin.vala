@@ -24,7 +24,6 @@ public class MainWin : Window
 	[CCode (instance_pos = -1)]
 	public void on_docs_view_row_activated(TreeView source, TreePath path, TreeViewColumn column) {
 		code_view.clear_code();
-		settings.set_string("options", "preamble", code_view.preamble_code);
 
 		TreeIter iter;
 		source.model.get_iter(out iter, path);
@@ -134,6 +133,9 @@ public class MainWin : Window
 		} catch {
 			options_dialog.preamble_code = "";
 		}
+		options_dialog.hide.connect(() => {
+			settings.set_string("options", "preamble", code_view.preamble_code);
+		});
 
 		set_title(_("Google Docs 2 LaTeX"));
 		set_default_size(800, 600);
