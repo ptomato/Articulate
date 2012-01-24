@@ -5,7 +5,11 @@ public class OptionsDialog : Dialog
 	private SourceView code_view;
 	private SourceBuffer buffer;
 
-	public string preamble_code;
+	public string preamble_code { owned get {
+		return buffer.text;
+	} set {
+		buffer.text = value;
+	}}
 	
 	public OptionsDialog() {
 		var frame = new Frame("<b>Preamble code</b>");
@@ -32,5 +36,8 @@ public class OptionsDialog : Dialog
 		get_action_area().show_all();
 		
 		title = "Document Options";
+
+		// Connect signals
+		buffer.changed.connect(() => { notify_property("preamble-code"); });
 	}
 }

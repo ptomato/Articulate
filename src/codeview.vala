@@ -73,7 +73,7 @@ public class CodeView : VBox
 			code[Repr.SEMANTIC_XML] = value;
 			var transform = new LaTeXTransform();
 			try {
-				latex_code_utf8 = transform.process(code[Repr.SEMANTIC_XML]);
+				latex_code_utf8 = transform.process(code[Repr.SEMANTIC_XML], preamble_code);
 			} catch(IOError e) {
 				display_error(e.message);
 			}
@@ -107,6 +107,7 @@ public class CodeView : VBox
 				content.text = code[Repr.FINAL_LATEX];
 		}
 	}
+	public string preamble_code { get; set; }
 	
 	// SIGNAL HANDLERS
 	

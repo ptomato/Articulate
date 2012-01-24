@@ -24,6 +24,7 @@ public class MainWin : Window
 	[CCode (instance_pos = -1)]
 	public void on_docs_view_row_activated(TreeView source, TreePath path, TreeViewColumn column) {
 		code_view.clear_code();
+		settings.set_string("options", "preamble", code_view.preamble_code);
 
 		TreeIter iter;
 		source.model.get_iter(out iter, path);
@@ -120,12 +121,19 @@ public class MainWin : Window
 			pane.add2(code_view);
 
 			password_dialog = new PasswordDialog(builder, this);
-			options_dialog = new OptionsDialog();
 		} catch(Error e) {
 			error("Could not load UI: %s\n", e.message);
 		}
 		documents = new TreeStore(4, typeof(string), typeof(string), typeof(string), typeof(DocumentsEntry));
 		documents_view.set_model(documents);
+
+		options_dialog = new OptionsDialog();
+		options_dialog.bind_property("preamble-code", code_view, "preamble-code", 0);
+		try {
+			options_dialog.preamble_code = settings.get_string("options", "preamble");
+		} catch {
+			options_dialog.preamble_code = "";
+		}
 
 		set_title(_("Google Docs 2 LaTeX"));
 		set_default_size(800, 600);
