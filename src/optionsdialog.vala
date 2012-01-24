@@ -11,12 +11,20 @@ public class OptionsDialog : Dialog
 		var frame = new Frame("<b>Preamble code</b>");
 		(frame.label_widget as Label).use_markup = true;
 		frame.shadow = ShadowType.NONE;
+
+		var alignment = new Alignment(0, 0, 1, 1);
+		alignment.left_padding = 12;
+
 		code_view = new SourceView();
 		code_view.set_size_request(400, 300);
 		buffer = code_view.get_buffer() as SourceBuffer;
+		var lmanager = SourceLanguageManager.get_default();
+		buffer.language = lmanager.get_language("latex");
+
 		var close = new Button.from_stock(Stock.CLOSE);
 		
-		frame.add(code_view);
+		alignment.add(code_view);
+		frame.add(alignment);
 		(get_content_area() as Box).pack_start(frame);
 		add_action_widget(close, ResponseType.CLOSE);
 		
