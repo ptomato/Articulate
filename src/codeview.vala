@@ -55,9 +55,8 @@ public class CodeView : VBox
 		}
 		set {
 			code[Repr.RAW_HTML] = value;
-			var transform = new SemanticTransform();
 			try {
-				xml_code = transform.process(code[Repr.RAW_HTML]);
+				xml_code = SemanticTransform.process(code[Repr.RAW_HTML]);
 			} catch(IOError e) {
 				display_error(e.message);
 			}
@@ -71,9 +70,8 @@ public class CodeView : VBox
 		}
 		set {
 			code[Repr.SEMANTIC_XML] = value;
-			var transform = new LaTeXTransform();
 			try {
-				latex_code_utf8 = transform.process(code[Repr.SEMANTIC_XML], preamble_code);
+				latex_code_utf8 = LaTeXTransform.process(code[Repr.SEMANTIC_XML], preamble_code);
 			} catch(IOError e) {
 				display_error(e.message);
 			}
@@ -87,9 +85,8 @@ public class CodeView : VBox
 		}
 		set {
 			code[Repr.LATEX_UTF8] = value;
-			var transform = new UTF8Transform();
 			try {
-				latex_code = transform.process(code[Repr.LATEX_UTF8]);
+				latex_code = UTF8Transform.process(code[Repr.LATEX_UTF8]);
 			} catch(RegexError e) {
 				display_error(e.message);
 			}

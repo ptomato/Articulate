@@ -1,12 +1,12 @@
 public class SemanticTransform 
 {
-	private string italic_class = "c1";
-	private string subscript_class = "c2";
-	private string superscript_class = "c3";
-
-	public string process(string input)
+	public static string process(string input)
 	throws IOError
 	{
+		var italic_class = "c1";
+		var subscript_class = "c2";
+		var superscript_class = "c3";
+
 		// Peek in the CSS to see which classes represent italics, subscript,
 		// and superscript
 		MatchInfo info;

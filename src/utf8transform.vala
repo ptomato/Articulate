@@ -4,7 +4,7 @@ public class UTF8Transform
 		public unichar orig;
 		public string latex;
 	}
-	private const transform[] table = {
+	private static const transform[] table = {
 		{ 0x0393, "\\Gamma" },
 		{ 0x0394, "\\Delta" },
 		{ 0x0398, "\\Theta" },
@@ -58,7 +58,7 @@ public class UTF8Transform
 		{ 0x2248, "\\approx" }
 	};
 		
-	public string process(string input)
+	public static string process(string input)
 	throws RegexError
 	{
 		string output = input;
