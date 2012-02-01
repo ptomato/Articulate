@@ -12,7 +12,6 @@ AC_PROG_CC_STDC
 AM_PROG_VALAC([0.7.0])
 AC_PROG_INSTALL
 IT_PROG_INTLTOOL([0.35])
-LIBCURL_CHECK_CONFIG   dnl substs LIBCURL and LIBCURL_CPPFLAGS; we provide our own VAPI
 
 GOOGLEDOCS2LATEX_PACKAGES="--pkg gtk+-2.0 --pkg gio-2.0 --pkg gmodule-2.0 --pkg gtksourceview-2.0 --pkg gnome-keyring-1-mod --pkg libgdata-mod --pkg libxslt --pkg gee-1.0 --pkg libcurl --pkg posix"
 PKG_CHECK_MODULES(GOOGLEDOCS2LATEX, [
@@ -28,6 +27,15 @@ PKG_CHECK_MODULES(GOOGLEDOCS2LATEX, [
 AC_SUBST(GOOGLEDOCS2LATEX_CFLAGS)
 AC_SUBST(GOOGLEDOCS2LATEX_LIBS)
 AC_SUBST(GOOGLEDOCS2LATEX_PACKAGES)
+PKG_CHECK_MODULES(CURL, [libcurl], [], dnl we provide our own VAPI
+[
+	# Try this if libcurl.pc wasn't found
+	LIBCURL_CHECK_CONFIG
+	CURL_CFLAGS=$(LIBCURL_CPPFLAGS)
+	CURL_LIBS=$(LIBCURL)
+])
+AC_SUBST([CURL_CFLAGS])
+AC_SUBST([CURL_LIBS])
 
 GETTEXT_PACKAGE=googledocs2latex
 AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["$GETTEXT_PACKAGE"], [Gettext Package])
