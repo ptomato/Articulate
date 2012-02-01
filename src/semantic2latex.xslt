@@ -15,6 +15,7 @@
   <xsl:value-of select="$document-options"/>
   <xsl:text>]{article}
 \usepackage{textcomp} % for \textmu
+\usepackage{graphicx}
 </xsl:text>
   <xsl:value-of select="$packages"/>
   <xsl:text>
