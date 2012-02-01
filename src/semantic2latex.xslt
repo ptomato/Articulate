@@ -111,7 +111,15 @@
 
 <xsl:template match="figure">
   <xsl:text>\begin{figure}
-  \caption{</xsl:text>
+  \centering
+</xsl:text>
+  <xsl:if test="image">
+    <xsl:text>  \includegraphics{</xsl:text>
+    <xsl:value-of select="image/attribute::uri"/>
+    <xsl:text>}
+</xsl:text>
+  </xsl:if>
+  <xsl:text>  \caption{</xsl:text>
   <xsl:value-of select="caption"/>
   <xsl:text>}
   \label{</xsl:text>

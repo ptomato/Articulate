@@ -81,11 +81,28 @@ Or is there a way to do it from within the XSLT code? -->
         <label><xsl:call-template name="label-name">
           <xsl:with-param name="text" select="normalize-space(substring-after(substring-before($text,'.'),'#Figure'))"/>
         </xsl:call-template></label>
-        <caption>
-          <xsl:call-template name="text">
-            <xsl:with-param name="text" select="normalize-space(substring-after($text,'.'))"/>
-          </xsl:call-template>
-        </caption>
+        <xsl:choose>
+          <xsl:when test="normalize-space(substring-after($text,'.')) != ''">
+            <caption>
+              <xsl:call-template name="text">
+                <xsl:with-param name="text" select="normalize-space(substring-after($text,'.'))"/>
+              </xsl:call-template>
+            </caption>
+          </xsl:when>
+          <xsl:when test="child::span[1]/following-sibling::img[1]">
+            <image>
+              <xsl:attribute name="uri">
+                <xsl:value-of select="child::span[1]/following-sibling::img[1]/attribute::src"/>
+              </xsl:attribute>
+            </image>
+            <caption>
+              <xsl:call-template name="text">
+                <xsl:with-param name="text" select="child::span[position() != 1]"/>
+              </xsl:call-template>
+            </caption>
+          </xsl:when>
+          <xsl:otherwise/> <!-- No caption -->
+        </xsl:choose>
       </figure>
     </xsl:when>
     <!-- #Equation is display math -->
