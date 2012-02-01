@@ -248,7 +248,6 @@ public class MainWin : Window
 
 public size_t curl_callback(char* buffer, size_t size, size_t nitems, void *outputstream) {
 	try {
-		print(@"size=$(size)\nnitems=$(nitems)\n");
 		uint8[] bytes = new uint8[size * nitems];
 		Posix.memcpy(bytes, buffer, size * nitems);
 		return (outputstream as OutputStream).write(bytes);
