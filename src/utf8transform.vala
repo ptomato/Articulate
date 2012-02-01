@@ -1,3 +1,5 @@
+using Gee;
+
 public class UTF8Transform
 {
 	private struct transform {
@@ -58,9 +60,11 @@ public class UTF8Transform
 		{ 0x2248, "\\approx" }
 	};
 		
-	public static string process(string input)
+	public static string process(string input, HashMap<string, File> image_list)
 	throws RegexError
 	{
+		image_list.clear();
+
 		string output = input;
 		foreach(var pair in table) {
 			output = output.replace(pair.orig.to_string(), pair.latex);
@@ -74,6 +78,18 @@ public class UTF8Transform
 				unit = "\\micro m";
 			builder.append(@"$$$quantity\\unit{$unit}$$");
 			return false; // continue replacement process
+		});
+
+		var image_regex = new Regex("""(?P<part1>\\begin{figure}.*?\\includegraphics{)(?P<uri>.*?)(?P<part2>}.*?\\label{(?P<label>.*?)}.*?\\end{figure})""", RegexCompileFlags.DOTALL);
+		output = image_regex.replace_eval(output, -1, 0, 0, (info, builder) => {
+			var uri = info.fetch_named("uri");
+			var label = info.fetch_named("label");
+			var part1 = info.fetch_named("part1");
+			var part2 = info.fetch_named("part2");
+			var file = File.new_for_uri(uri);
+			image_list.set(label, file);
+			builder.append(@"$part1$label$part2");
+			return false; // continue
 		});
 
 		return output;

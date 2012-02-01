@@ -1,3 +1,4 @@
+using Gee;
 using Gtk;
 
 /* Enumeration for intermediate representations of the document */
@@ -86,7 +87,7 @@ public class CodeView : VBox
 		set {
 			code[Repr.LATEX_UTF8] = value;
 			try {
-				latex_code = UTF8Transform.process(code[Repr.LATEX_UTF8]);
+				latex_code = UTF8Transform.process(code[Repr.LATEX_UTF8], file_list);
 			} catch(RegexError e) {
 				display_error(e.message);
 			}
@@ -105,6 +106,7 @@ public class CodeView : VBox
 		}
 	}
 	public string preamble_code { get; set; }
+	public HashMap<string, File> file_list;
 	
 	// SIGNAL HANDLERS
 	
@@ -143,6 +145,8 @@ public class CodeView : VBox
 		this.pack_start(info_bar, false, false);
 		this.pack_start(stage_selector, false, false);
 		this.pack_start(scrollwin);
+
+		file_list = new HashMap<string, File>();
 	}
 	
 	// METHODS
