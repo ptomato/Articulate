@@ -16,6 +16,13 @@
     <property name="stock_id">gtk-properties</property>
     <signal name="activate" handler="main_win_on_options" swapped="no"/>
   </object>
+  <object class="GtkAction" id="save">
+    <property name="label">_Save...</property>
+    <property name="short_label">_Save</property>
+    <property name="tooltip">Save the LaTeX document and any accompanying graphics to a directory</property>
+    <property name="stock_id">gtk-save</property>
+    <signal name="activate" handler="main_win_on_save" swapped="no"/>
+  </object>
   <object class="GtkVBox" id="frame">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -40,6 +47,18 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="related_action">options</property>
+            <property name="use_underline">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="toolbutton3">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="related_action">save</property>
             <property name="use_underline">True</property>
           </object>
           <packing>

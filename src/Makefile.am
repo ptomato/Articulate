@@ -14,6 +14,7 @@ googledocs2latex_SOURCES = \
 INCLUDES = \
 	-include config.h \
 	$(GOOGLEDOCS2LATEX_CFLAGS) \
+	$(LIBCURL_CPPFLAGS) \
 	-DLOCALEDIR=\""$(localedir)"\" \
 	-DPKGDATADIR=\""$(pkgdatadir)"\" \
 	-DPKGLIBDIR=\""$(pkglibdir)"\"
@@ -26,7 +27,8 @@ AM_VALAFLAGS = \
 	@GOOGLEDOCS2LATEX_PACKAGES@
 
 googledocs2latex_LDADD = \
-	$(GOOGLEDOCS2LATEX_LIBS)
+	$(GOOGLEDOCS2LATEX_LIBS) \
+	$(LIBCURL)
 
 EXTRA_DIST = mainwin.ui
 	

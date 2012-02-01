@@ -80,6 +80,59 @@ public class MainWin : Window
 		options_dialog.hide();
 	}
 
+	[CCode (instance_pos = -1)]
+	public void on_save(Gtk.Action action) {
+		// Save the LaTeX code and accompanying graphics to a directory
+		var dialog = new FileChooserDialog("Choose a directory to save to", this, FileChooserAction.SAVE, Stock.CANCEL, ResponseType.CANCEL, Stock.OK, ResponseType.OK);
+		var filter = new FileFilter();
+		filter.set_name("LaTeX files (*.tex)");
+		filter.add_pattern("*.tex");
+		dialog.add_filter(filter);
+		dialog.do_overwrite_confirmation = true;
+		var response = dialog.run();
+		dialog.hide();
+		if(response != ResponseType.OK)
+			return;
+
+		// Save LaTeX code
+		var latexfile = dialog.get_file();
+		try {
+			latexfile.replace_contents(code_view.latex_code, code_view.latex_code.length, null, false, FileCreateFlags.NONE, null);
+		} catch(Error e) {
+			error_dialog("There was an error saving the LaTeX file.", @"Error message: <b>\"$(e.message)\"</b>");
+			return;
+		}
+
+		var parent = latexfile.get_parent();
+		foreach(var entry in code_view.file_list.entries) {
+			var destfile = parent.get_child(entry.key + ".png");
+			if(destfile.query_exists()) {
+				var pngdialog = new MessageDialog(this, DialogFlags.MODAL | DialogFlags.DESTROY_WITH_PARENT,
+					MessageType.QUESTION, ButtonsType.NONE,
+					"Are you sure you want to overwrite '%s'?", entry.key + ".png");
+				pngdialog.add_buttons(Stock.CANCEL, ResponseType.CANCEL, "Overwrite", ResponseType.OK);
+				pngdialog.secondary_text = "This will delete the previous file.";
+				var pngresponse = pngdialog.run();
+				pngdialog.hide();
+
+				if(pngresponse != ResponseType.OK)
+					continue;
+			}
+
+			try {
+				var outputstream = destfile.replace(null, false, FileCreateFlags.NONE);
+				var curlhandle = new Curl.EasyHandle();
+				curlhandle.setopt(Curl.Option.URL, entry.value.get_uri());
+				curlhandle.setopt(Curl.Option.WRITEDATA, outputstream);
+				curlhandle.setopt(Curl.Option.WRITEFUNCTION, curl_callback);
+				curlhandle.perform();
+				outputstream.close();
+			} catch (Error e) {
+				error_dialog(@"There was an error downloading a graphics file.", @"Error message: <b>\"$(e.message)\"</b>");
+			}
+		}
+	}
+
 	public void on_quit() {
 		try {
 			var text = settings.to_data();
@@ -190,5 +243,16 @@ public class MainWin : Window
 		error_dialog.title = "Google Docs 2 LaTeX";
 		error_dialog.run();
 		error_dialog.destroy();
+	}
+}
+
+public size_t curl_callback(char* buffer, size_t size, size_t nitems, void *outputstream) {
+	try {
+		print(@"size=$(size)\nnitems=$(nitems)\n");
+		uint8[] bytes = new uint8[size * nitems];
+		Posix.memcpy(bytes, buffer, size * nitems);
+		return (outputstream as OutputStream).write(bytes);
+	} catch(Error e) {
+		return 0;
 	}
 }
