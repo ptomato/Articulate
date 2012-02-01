@@ -18,7 +18,10 @@ INCLUDES = \
 	-DPKGDATADIR=\""$(pkgdatadir)"\" \
 	-DPKGLIBDIR=\""$(pkglibdir)"\"
 
-VALAFLAGS = \
+# Disable warnings in the C compiler, since the Vala-generated C produces lots
+AM_CFLAGS = -w
+
+AM_VALAFLAGS = \
 	--vapidir=$(srcdir)/../vapi --pkg config \
 	@GOOGLEDOCS2LATEX_PACKAGES@
 
