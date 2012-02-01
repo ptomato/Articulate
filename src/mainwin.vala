@@ -137,6 +137,8 @@ public class MainWin : Window
 			settings.set_string("options", "preamble", code_view.preamble_code);
 		});
 
+		options_dialog.transient_for = this;
+
 		set_title(_("Google Docs 2 LaTeX"));
 		set_default_size(800, 600);
 		this.destroy.connect(on_quit);
