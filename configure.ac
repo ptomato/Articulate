@@ -20,7 +20,7 @@ PKG_CHECK_MODULES(GOOGLEDOCS2LATEX, [
 	gmodule-2.0
 	gtksourceview-2.0
 	gee-1.0
-	gnome-keyring-1  dnl Not in GOOGLEDOCS2LATEX_PACKAGES, as we provide our own VAPI
+	gnome-keyring-1 >= 2.22 dnl Not in GOOGLEDOCS2LATEX_PACKAGES, as we provide our own non-buggy VAPI
 	libgdata  dnl also not in PACKAGES
 	libxslt libexslt  dnl doesn't even have a VAPI, we provide our own
 ])
