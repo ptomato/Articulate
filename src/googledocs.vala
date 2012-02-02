@@ -48,49 +48,49 @@ public class GoogleDocs : DocumentsService {
 	public void find_password_in_keyring()
 		throws IOError
 	{
-		bool cancel = false;
+		unowned string _temp_password;
 		password = null;
 		
 		// See if a password is stored in the keyring
-		GnomeKeyring.find_password(GnomeKeyring.NETWORK_PASSWORD,
-			(res, pass) => {
-				switch(res) {
-					case GnomeKeyring.Result.OK:
-						password = pass;
-						return;
-					case GnomeKeyring.Result.DENIED:
-					case GnomeKeyring.Result.CANCELLED:
-						cancel = true;
-						return;
-					case GnomeKeyring.Result.NO_MATCH:
-						return;
-					default:
-						warning(@"Problem finding password in Gnome Keyring: $res");
-						return;
-				}
-			},
+		var res = GnomeKeyring.find_password_sync(GnomeKeyring.NETWORK_PASSWORD, 
+			out _temp_password,
 			"user", username,
 			"server", "docs.google.com",
 			"protocol", "gdata",
 			"domain", "googledocs2latex",
 			null);
-
-		// If the operation was cancelled, throw an exception
-		if(cancel)
-			throw new IOError.CANCELLED("User cancelled");
+		switch(res) {
+			case GnomeKeyring.Result.OK:
+				password = _temp_password;
+				GnomeKeyring.free_password(_temp_password);
+				break;
+			case GnomeKeyring.Result.NO_MATCH:
+				break;
+			case GnomeKeyring.Result.DENIED:
+			case GnomeKeyring.Result.CANCELLED:
+				// If the operation was cancelled, throw an exception
+				throw new IOError.CANCELLED("User cancelled");
+			default:
+				var msg = GnomeKeyring.result_to_message(res);
+				warning(@"Problem finding password in Gnome Keyring: $msg");
+				break;
+		}
 	}
 
 	public void save_password_in_keyring() {
-		GnomeKeyring.store_password(GnomeKeyring.NETWORK_PASSWORD,
+		var res = GnomeKeyring.store_password_sync(GnomeKeyring.NETWORK_PASSWORD,
 			GnomeKeyring.DEFAULT,
 			"Google Account password for GoogleDocs2LaTeX",
 			_password,
-			(res) => { },
 			"user", username,
 			"server", "docs.google.com",
 			"protocol", "gdata",
 			"domain", "googledocs2latex",
 			null);
+		if(res != GnomeKeyring.Result.OK) {
+			var msg = GnomeKeyring.result_to_message(res);
+			warning(@"Problem saving password in Gnome Keyring: $msg");
+		}
 	}
 
 	public GoogleDocs() {
