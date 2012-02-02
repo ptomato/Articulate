@@ -6,6 +6,10 @@ main(string[] args)
 	Intl.textdomain(Config.GETTEXT_PACKAGE);
 
 	Curl.global_init(Curl.GLOBAL_ALL);
+	
+	var gk_available = GnomeKeyring.is_available();
+	if(!gk_available)
+		warning("Gnome Keyring not available");
 
 	Gtk.init(ref args);
 
