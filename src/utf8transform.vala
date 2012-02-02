@@ -57,7 +57,15 @@ public class UTF8Transform
 		{ 0x2212, "-" }, // math mode, minus sign
 		{ 0x221A, "\\sqrt " },
 		{ 0x221D, "\\propto " },
-		{ 0x2248, "\\approx " }
+		{ 0x2248, "\\approx " },
+
+		// Use Unicode full-width delimiters for paired LaTeX versions?
+		{ 0xFF08, "\\left(" },
+		{ 0xFF09, "\\right)" },
+		{ 0xFF3B, "\\left[" },
+		{ 0xFF3D, "\\right]" },
+		{ 0xFF5B, "\\left\\{" },
+		{ 0xFF5D, "\\right\\}" }
 	};
 		
 	public static string process(string input, HashMap<string, File> image_list)
