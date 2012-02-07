@@ -7,6 +7,8 @@ public class UTF8Transform
 		public string latex;
 	}
 	private static const transform[] table = {
+		{ 0x0025, "\\%"},
+
 		{ 0x0393, "\\Gamma " },
 		{ 0x0394, "\\Delta " },
 		{ 0x0398, "\\Theta " },
