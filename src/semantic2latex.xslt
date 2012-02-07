@@ -23,16 +23,33 @@
 \newcommand{\micro}{\mbox{\textmu}}
 </xsl:text>
   <xsl:value-of select="$preamble-commands"/>
+  <xsl:apply-templates select="/document/preamble"/>
 <xsl:text>
 \begin{document}
 
 </xsl:text>
-  <xsl:apply-templates/>
+  <xsl:apply-templates select="/document/head"/>
+  <xsl:apply-templates select="/document/body"/>
   <xsl:text>\end{document}
 </xsl:text>
 </xsl:template>
 
-<xsl:template match="/document/preamble">
+<xsl:template match="/document/preamble/command">
+  <xsl:text>\newcommand{\</xsl:text>
+  <xsl:value-of select="@name"/>
+  <xsl:text>}</xsl:text>
+  <xsl:if test="@args">
+    <xsl:text>[</xsl:text>
+    <xsl:value-of select="@args"/>
+    <xsl:text>]</xsl:text>
+  </xsl:if>
+  <xsl:text>{</xsl:text>
+  <xsl:value-of select="."/>
+  <xsl:text>}
+</xsl:text>
+</xsl:template>
+
+<xsl:template match="/document/head">
   <xsl:apply-templates/>
   <xsl:text>\date{}
 \maketitle
@@ -40,14 +57,14 @@
 </xsl:text>
 </xsl:template>
 
-<xsl:template match="/document/preamble/title">
+<xsl:template match="/document/head/title">
   <xsl:text>\title{</xsl:text>
   <xsl:value-of select="."/>
   <xsl:text>}
 </xsl:text>
 </xsl:template>
 
-<xsl:template match="/document/preamble/authors">
+<xsl:template match="/document/head/authors">
   <xsl:text>\author{</xsl:text>
   <xsl:for-each select="author">
     <xsl:value-of select="translate(., ' ', '~')"/>

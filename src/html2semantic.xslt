@@ -21,6 +21,9 @@ Or is there a way to do it from within the XSLT code? -->
 
 <xsl:template mode="preamble" match="/html/body">
   <preamble>
+      <xsl:apply-templates mode="definitions" select="/html/body/p[preceding-sibling::h2[1]/span = 'Latex Code']"/>
+  </preamble>
+  <head>
     <title><xsl:value-of select="h1[1]"/></title>
     <authors>
       <xsl:for-each select="str:tokenize(string(p[1]), ',')">
@@ -29,10 +32,40 @@ Or is there a way to do it from within the XSLT code? -->
         </author>
       </xsl:for-each>
     </authors>
-  </preamble>
+  </head>
   <body>
     <xsl:apply-templates mode="body" select="/html/body"/>
   </body>
+</xsl:template>
+
+<xsl:template mode="definitions" match="p">
+  <xsl:choose>
+    <xsl:when test="starts-with(span,'#define')">
+      <command>
+        <xsl:variable name="name-and-args">
+          <xsl:value-of select="normalize-space(substring-before(substring-after(span,'#define '),' '))"/>
+        </xsl:variable>
+        <xsl:choose>
+          <xsl:when test="contains($name-and-args,'[')">
+            <xsl:attribute name="name">
+              <xsl:value-of select="substring-before($name-and-args,'[')"/>
+            </xsl:attribute>
+            <xsl:attribute name="args">
+              <xsl:value-of select="substring-before(substring-after($name-and-args,'['),']')"/>
+            </xsl:attribute>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:attribute name="name">
+              <xsl:value-of select="$name-and-args"/>
+            </xsl:attribute>
+          </xsl:otherwise>
+        </xsl:choose>
+        <xsl:value-of select="normalize-space(substring-after(substring-after(span,'#define '),' '))"/>
+      </command>
+    </xsl:when>
+    <xsl:when test="starts-with(span,'#package')">
+    </xsl:when>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template mode="body" match="/html/body">
@@ -42,32 +75,35 @@ Or is there a way to do it from within the XSLT code? -->
       <xsl:choose>
         <xsl:when test="span='Abstract'">abstract</xsl:when>
         <xsl:when test="span='References' or span='Bibliography'">bibliography</xsl:when>
+        <xsl:when test="span='Latex Code'">definitions</xsl:when>
         <xsl:otherwise>section</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:element name="{$section-type}">
-      <xsl:if test="$section-type='section'">
-        <title><xsl:value-of select="span"/></title>
-      </xsl:if>
-      <xsl:for-each select="following-sibling::p[preceding-sibling::h2[1] = $header]">
-	    <xsl:if test="span != ''">
-	      <xsl:variable name="trim-content" select="normalize-space(span)"/>
-	      <xsl:choose>
-	        <xsl:when test="$section-type='bibliography' and starts-with($trim-content,'[')">
-	          <item>
-	            <citekey><xsl:value-of select="substring-after(substring-before($trim-content,']'),'[')"/></citekey>
-	            <p><xsl:value-of select="normalize-space(substring-after($trim-content,']'))"/></p>
-	          </item>
-	        </xsl:when>
-	        <xsl:otherwise>
-	          <xsl:call-template name="paragraph">
-	            <xsl:with-param name="text" select="$trim-content"/>
-	          </xsl:call-template>
-	        </xsl:otherwise>
-	      </xsl:choose>
-	    </xsl:if>
-      </xsl:for-each>
-    </xsl:element>
+    <xsl:if test="$section-type != 'definitions'">
+      <xsl:element name="{$section-type}">
+        <xsl:if test="$section-type='section'">
+          <title><xsl:value-of select="span"/></title>
+        </xsl:if>
+        <xsl:for-each select="following-sibling::p[preceding-sibling::h2[1] = $header]">
+	      <xsl:if test="span != ''">
+	        <xsl:variable name="trim-content" select="normalize-space(span)"/>
+	        <xsl:choose>
+	          <xsl:when test="$section-type='bibliography' and starts-with($trim-content,'[')">
+	            <item>
+	              <citekey><xsl:value-of select="substring-after(substring-before($trim-content,']'),'[')"/></citekey>
+	              <p><xsl:value-of select="normalize-space(substring-after($trim-content,']'))"/></p>
+                </item>
+	          </xsl:when>
+	          <xsl:otherwise>
+                <xsl:call-template name="paragraph">
+                  <xsl:with-param name="text" select="$trim-content"/>
+                </xsl:call-template>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:if>
+        </xsl:for-each>
+      </xsl:element>
+    </xsl:if>
   </xsl:for-each>
 </xsl:template>
 
