@@ -90,7 +90,7 @@ public class UTF8Transform
 			return false; // continue replacement process
 		});
 
-		var image_regex = new Regex("""(?P<part1>\\begin{figure}.*?\\includegraphics{)(?P<uri>.*?)(?P<part2>}.*?\\label{(?P<label>.*?)}.*?\\end{figure})""", RegexCompileFlags.DOTALL);
+		var image_regex = new Regex("""(?P<part1>\\begin{figure}.*?\\includegraphics(\[.*?\])?{)(?P<uri>.*?)(?P<part2>}.*?\\label{(?P<label>.*?)}.*?\\end{figure})""", RegexCompileFlags.DOTALL);
 		output = image_regex.replace_eval(output, -1, 0, 0, (info, builder) => {
 			var uri = info.fetch_named("uri");
 			var label = info.fetch_named("label");

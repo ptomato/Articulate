@@ -6,6 +6,7 @@
 <xsl:param name="document-options">a4paper</xsl:param>
 <xsl:param name="packages"/>
 <xsl:param name="preamble-commands"/>
+<xsl:param name="graph-width">3.25in</xsl:param>
 
 <xsl:output method="text" indent="no"/>
 <xsl:strip-space elements="*"/>
@@ -21,6 +22,10 @@
   <xsl:text>
 \newcommand{\unit}[1]{\mbox{$\;\mathrm{#1}$}}
 \newcommand{\micro}{\mbox{\textmu}}
+\newlength\graphwidth
+\setlength\graphwidth{</xsl:text>
+  <xsl:value-of select="$graph-width"/>
+  <xsl:text>}
 </xsl:text>
   <xsl:value-of select="$preamble-commands"/>
   <xsl:apply-templates select="/document/preamble"/>
@@ -132,7 +137,7 @@
   \centering
 </xsl:text>
   <xsl:if test="image">
-    <xsl:text>  \includegraphics{</xsl:text>
+    <xsl:text>  \includegraphics[width=\graphwidth]{</xsl:text>
     <xsl:value-of select="image/attribute::uri"/>
     <xsl:text>}
 </xsl:text>
