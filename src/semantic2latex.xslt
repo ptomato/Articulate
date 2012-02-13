@@ -143,7 +143,7 @@
 </xsl:text>
   </xsl:if>
   <xsl:text>  \caption{</xsl:text>
-  <xsl:value-of select="caption"/>
+  <xsl:apply-templates mode="inline" select="caption"/>
   <xsl:text>}
   \label{</xsl:text>
   <xsl:value-of select="label"/>

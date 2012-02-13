@@ -132,9 +132,7 @@ Or is there a way to do it from within the XSLT code? -->
               </xsl:attribute>
             </image>
             <caption>
-              <xsl:call-template name="text">
-                <xsl:with-param name="text" select="child::span[position() != 1]"/>
-              </xsl:call-template>
+              <xsl:apply-templates mode="paragraph" select="child::img/following-sibling::span"/>
             </caption>
           </xsl:when>
           <xsl:otherwise/> <!-- No caption -->
