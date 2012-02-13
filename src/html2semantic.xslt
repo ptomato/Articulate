@@ -21,12 +21,12 @@ Or is there a way to do it from within the XSLT code? -->
 
 <xsl:template mode="preamble" match="/html/body">
   <preamble>
-      <xsl:apply-templates mode="definitions" select="/html/body/p[preceding-sibling::h2[1]/span = 'Latex Code']"/>
+      <xsl:apply-templates mode="definitions" select="/html/body/p[preceding-sibling::h1[1]/span = 'Latex Code']"/>
   </preamble>
   <head>
-    <title><xsl:value-of select="h1[1]"/></title>
+    <title><xsl:value-of select="p[contains(@class,'title')]"/></title>
     <authors>
-      <xsl:for-each select="str:tokenize(string(p[1]), ',')">
+      <xsl:for-each select="str:tokenize(string(p[contains(@class,'subtitle')]), ',')">
         <author>
           <xsl:value-of select="normalize-space(.)"/>
         </author>
@@ -69,7 +69,7 @@ Or is there a way to do it from within the XSLT code? -->
 </xsl:template>
 
 <xsl:template mode="body" match="/html/body">
-  <xsl:for-each select="h2">
+  <xsl:for-each select="h1">
     <xsl:variable name="header" select="."/>
     <xsl:variable name="section-type">
       <xsl:choose>
@@ -84,7 +84,7 @@ Or is there a way to do it from within the XSLT code? -->
         <xsl:if test="$section-type='section'">
           <title><xsl:value-of select="span"/></title>
         </xsl:if>
-        <xsl:for-each select="following-sibling::p[preceding-sibling::h2[1] = $header]">
+        <xsl:for-each select="following-sibling::p[preceding-sibling::h1[1] = $header]">
 	      <xsl:if test="span != ''">
 	        <xsl:variable name="trim-content" select="normalize-space(span)"/>
 	        <xsl:choose>
