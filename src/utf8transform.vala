@@ -8,6 +8,7 @@ public class UTF8Transform
 	}
 	private static const transform[] table = {
 		{ 0x0025, "\\%"},
+		{ 0x00BD, "\\mbox{$\\frac{1}{2}$}" }, // vulgar fraction one-half
 
 		{ 0x0393, "\\Gamma " },
 		{ 0x0394, "\\Delta " },
@@ -47,6 +48,7 @@ public class UTF8Transform
 		{ 0x03C8, "\\psi " },
 		{ 0x03C9, "\\omega " },
 		
+		{ 0x2014, "---" }, // em dash
 		{ 0x2018, "`" }, // left single quote
 		{ 0x2019, "'" }, // right single quote
 		{ 0x201C, "``" }, // left double quote
