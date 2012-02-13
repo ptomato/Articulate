@@ -95,11 +95,13 @@
 </xsl:template>
 
 <xsl:template match="/document/body/section/title">
-  <xsl:text>\section{</xsl:text>
-  <xsl:value-of select="."/>
-  <xsl:text>}
+  <xsl:if test="text() != '-'">
+    <xsl:text>\section{</xsl:text>
+    <xsl:value-of select="."/>
+    <xsl:text>}
 
 </xsl:text>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="/document/body/bibliography">
