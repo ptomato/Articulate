@@ -43,7 +43,7 @@ public enum Repr {
 public class CodeView : VBox
 {
 	// Widget pointers
-	private ComboBox stage_selector;
+	private ComboBoxText stage_selector;
 	private SourceView code_view;
 	private InfoBar info_bar;
 	private Label info_label;
@@ -120,7 +120,7 @@ public class CodeView : VBox
 	
 	public CodeView() {
 		// Construct the combo box values from the enum
-		stage_selector = new ComboBox.text();
+		stage_selector = new ComboBoxText();
 		foreach(Repr repr in Repr.all())
 			stage_selector.append_text(repr.to_string());
 		stage_selector.active = Repr.FINAL_LATEX;

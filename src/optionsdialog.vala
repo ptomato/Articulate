@@ -14,14 +14,14 @@ public class OptionsDialog : Dialog
 	public OptionsDialog() {
 		var frame = new Frame("<b>Preamble code</b>");
 		(frame.label_widget as Label).use_markup = true;
-		frame.shadow = ShadowType.NONE;
+		frame.shadow_type = ShadowType.NONE;
 
 		var alignment = new Alignment(0, 0, 1, 1);
 		alignment.left_padding = 12;
 
 		code_view = new SourceView();
 		code_view.set_size_request(400, 300);
-		buffer = code_view.get_buffer() as SourceBuffer;
+		buffer = code_view.buffer as SourceBuffer;
 		var lmanager = SourceLanguageManager.get_default();
 		buffer.language = lmanager.get_language("latex");
 
