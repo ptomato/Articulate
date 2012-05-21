@@ -7,7 +7,9 @@ public class UTF8Transform
 		public string latex;
 	}
 	private static const transform[] table = {
-		{ 0x0025, "\\%"},
+		{ 0x0025, "\\%" },
+		{ 0x00A0, "\\ " }, // non-breaking space
+		{ 0x00B1, "\\pm " },
 		{ 0x00BD, "\\mbox{$\\frac{1}{2}$}" }, // vulgar fraction one-half
 
 		{ 0x0393, "\\Gamma " },
@@ -43,10 +45,11 @@ public class UTF8Transform
 		{ 0x03C3, "\\sigma " },
 		{ 0x03C4, "\\tau " },
 		{ 0x03C5, "\\upsilon " },
-		{ 0x03C6, "\\phi " },
+		{ 0x03C6, "\\varphi " }, // see Unicode Technical Report #25
 		{ 0x03C7, "\\chi " },
 		{ 0x03C8, "\\psi " },
 		{ 0x03C9, "\\omega " },
+		{ 0x03D5, "\\phi " },
 		
 		{ 0x2014, "---" }, // em dash
 		{ 0x2018, "`" }, // left single quote
