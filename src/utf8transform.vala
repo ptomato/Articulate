@@ -11,6 +11,7 @@ public class UTF8Transform
 		{ 0x00A0, "\\ " }, // non-breaking space
 		{ 0x00B1, "\\pm " },
 		{ 0x00BD, "\\mbox{$\\frac{1}{2}$}" }, // vulgar fraction one-half
+		{ 0x00E9, "\\'{e}" }, // latin small letter e with acute
 
 		{ 0x0393, "\\Gamma " },
 		{ 0x0394, "\\Delta " },
@@ -65,6 +66,9 @@ public class UTF8Transform
 		{ 0x221A, "\\sqrt " },
 		{ 0x221D, "\\propto " },
 		{ 0x2248, "\\approx " },
+		{ 0x22A5, "\\perp " }, // up tack
+
+		{ 0x23B7, "\\sqrt " }, // radical symbol bottom
 
 		// Use Unicode full-width delimiters for paired LaTeX versions?
 		{ 0xFF08, "\\left(" },
