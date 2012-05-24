@@ -8,7 +8,9 @@ public class UTF8Transform
 	}
 	private static const transform[] table = {
 		{ 0x0025, "\\%" },
-		{ 0x00A0, "\\ " }, // non-breaking space
+		/*{ 0x00A0, "~" },*/ // non-breaking space
+		// Unfortunately, Google Docs inserts spurious &nbsp;s in the downloaded
+		// HTML. Just use regular LaTeX backslash-space in your source document.
 		{ 0x00B1, "\\pm " },
 		{ 0x00BD, "\\mbox{$\\frac{1}{2}$}" }, // vulgar fraction one-half
 		{ 0x00E9, "\\'{e}" }, // latin small letter e with acute
@@ -52,12 +54,16 @@ public class UTF8Transform
 		{ 0x03C9, "\\omega " },
 		{ 0x03D5, "\\phi " },
 		
+		{ 0x2000, "\\qquad " }, // en quad (1/2 em x 4 = 2 em)
+		{ 0x2003, "\\quad " }, // em space
+		{ 0x2004, "\\ " }, // three-per-em space
+		{ 0x2006, "\\," }, // six-per-em space
 		{ 0x2014, "---" }, // em dash
 		{ 0x2018, "`" }, // left single quote
 		{ 0x2019, "'" }, // right single quote
 		{ 0x201C, "``" }, // left double quote
 		{ 0x201D, "''" }, // right double quote
-
+		{ 0x205F, "\\:" }, // medium mathematical space (4/18 em)
 		{ 0x207A, "$^+$" }, // text mode, superscript plus
 
 		{ 0x210F, "\\hbar " },
