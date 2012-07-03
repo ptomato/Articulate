@@ -57,7 +57,7 @@ public class GoogleDocs : DocumentsService {
 			"user", username,
 			"server", "docs.google.com",
 			"protocol", "gdata",
-			"domain", "googledocs2latex",
+			"domain", "articulate",
 			null);
 		switch(res) {
 			case GnomeKeyring.Result.OK:
@@ -80,12 +80,12 @@ public class GoogleDocs : DocumentsService {
 	public void save_password_in_keyring() {
 		var res = GnomeKeyring.store_password_sync(GnomeKeyring.NETWORK_PASSWORD,
 			GnomeKeyring.DEFAULT,
-			"Google Account password for GoogleDocs2LaTeX",
+			"Google Account password for Articulate",
 			_password,
 			"user", username,
 			"server", "docs.google.com",
 			"protocol", "gdata",
-			"domain", "googledocs2latex",
+			"domain", "articulate",
 			null);
 		if(res != GnomeKeyring.Result.OK) {
 			var msg = GnomeKeyring.result_to_message(res);
