@@ -1,6 +1,6 @@
-bin_PROGRAMS = googledocs2latex
+bin_PROGRAMS = articulate
 
-googledocs2latex_SOURCES = \
+articulate_SOURCES = \
 	main.vala \
 	mainwin.vala \
 	passworddialog.vala \
@@ -13,7 +13,7 @@ googledocs2latex_SOURCES = \
 
 INCLUDES = \
 	-include config.h \
-	$(GOOGLEDOCS2LATEX_CFLAGS) \
+	$(ARTICULATE_CFLAGS) \
 	$(CURL_CFLAGS) \
 	-DLOCALEDIR=\""$(localedir)"\" \
 	-DPKGDATADIR=\""$(pkgdatadir)"\" \
@@ -24,10 +24,10 @@ AM_CFLAGS = -w
 
 AM_VALAFLAGS = \
 	--vapidir=$(srcdir)/../vapi --pkg config \
-	@GOOGLEDOCS2LATEX_PACKAGES@
+	@ARTICULATE_PACKAGES@
 
-googledocs2latex_LDADD = \
-	$(GOOGLEDOCS2LATEX_LIBS) \
+articulate_LDADD = \
+	$(ARTICULATE_LIBS) \
 	$(CURL_LIBS)
 
 EXTRA_DIST = mainwin.ui

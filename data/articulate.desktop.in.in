@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-_Name=GoogleDocs2LaTeX
-_GenericName=Google Docs 2 LaTeX
+_Name=Articulate
+_GenericName=Articulate
 _Comment=Export your Google Docs to LaTeX
-Exec=googledocs2latex
-Icon=googledocs2latex
+Exec=articulate
+Icon=articulate
 Terminal=false
 Categories=Productivity
 StartupNotify=true

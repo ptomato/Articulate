@@ -149,7 +149,7 @@ public class MainWin : Window
 		google = new GoogleDocs();
 
 		settings = new KeyFile();
-		settings_file = File.new_for_path(Environment.get_home_dir()).get_child(".googledocs2latex");
+		settings_file = File.new_for_path(Environment.get_home_dir()).get_child(".articulate");
 
 		try {
 			settings.load_from_file(settings_file.get_path(), KeyFileFlags.NONE);
@@ -192,7 +192,7 @@ public class MainWin : Window
 
 		options_dialog.transient_for = this;
 
-		set_title(_("Google Docs 2 LaTeX"));
+		set_title(_("Articulate"));
 		set_default_size(800, 600);
 		this.destroy.connect(on_quit);
 	}
@@ -240,7 +240,7 @@ public class MainWin : Window
 			"%s", primary);
 		error_dialog.secondary_use_markup = true;
 		error_dialog.secondary_text = secondary;
-		error_dialog.title = "Google Docs 2 LaTeX";
+		error_dialog.title = "Articulate";
 		error_dialog.run();
 		error_dialog.destroy();
 	}
