@@ -97,7 +97,7 @@ public class MainWin : Window
 		// Save LaTeX code
 		var latexfile = dialog.get_file();
 		try {
-			latexfile.replace_contents(code_view.latex_code, code_view.latex_code.length, null, false, FileCreateFlags.NONE, null);
+			latexfile.replace_contents(code_view.latex_code.data, null, false, FileCreateFlags.NONE, null);
 		} catch(Error e) {
 			error_dialog("There was an error saving the LaTeX file.", @"Error message: <b>\"$(e.message)\"</b>");
 			return;
@@ -136,7 +136,7 @@ public class MainWin : Window
 	public void on_quit() {
 		try {
 			var text = settings.to_data();
-			settings_file.replace_contents(text, text.length, null, false, FileCreateFlags.NONE, null);
+			settings_file.replace_contents(text.data, null, false, FileCreateFlags.NONE, null);
 		} catch(Error e) {
 			warning("Could not save settings file: %s", e.message);
 		}
