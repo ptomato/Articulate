@@ -4,4 +4,4 @@ Makefile.in
 *.stamp
 *.c
 *.o
-googledocs2latex
+articulate
