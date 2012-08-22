@@ -187,6 +187,12 @@
   <xsl:text>}</xsl:text>
 </xsl:template>
 
+<xsl:template mode="inline" match="emphasis">
+  <xsl:text>\emph{</xsl:text>
+  <xsl:value-of select="."/>
+  <xsl:text>}</xsl:text>
+</xsl:template>
+
 <!-- Templates for math mode -->
 
 <xsl:template mode="math" match="sup">

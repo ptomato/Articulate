@@ -173,13 +173,24 @@ Or is there a way to do it from within the XSLT code? -->
   <!-- Only process math elements that are not preceded by another math element -->
   <xsl:choose>
     <xsl:when test="contains(@class,$italic-class)">
-      <xsl:if test="preceding-sibling::span[1][not(contains(@class,$italic-class))]">
-        <math><xsl:value-of select="text()"/>
-          <xsl:call-template name="continue-math">
-            <xsl:with-param name="next" select="following-sibling::span[1]"/>
-          </xsl:call-template>
-        </math>
-      </xsl:if>
+      <xsl:choose>
+        <!-- Heuristic: if italic string is more than two characters long and
+        contains only letters and spaces, then it is meant to be emphasized
+        instead of math -->
+        <xsl:when test="string-length(text()) > 2 and translate(text(), 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ', '') = ''">
+          <emphasis><xsl:value-of select="text()"/></emphasis>
+        </xsl:when>
+        <!-- Otherwise, it is math -->
+        <xsl:otherwise>
+          <xsl:if test="preceding-sibling::span[1][not(contains(@class,$italic-class))]">
+            <math><xsl:value-of select="text()"/>
+              <xsl:call-template name="continue-math">
+                <xsl:with-param name="next" select="following-sibling::span[1]"/>
+              </xsl:call-template>
+            </math>
+          </xsl:if>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:when>
     <!-- Not a math element -->
     <xsl:otherwise>
