@@ -82,7 +82,23 @@ Or is there a way to do it from within the XSLT code? -->
     <xsl:if test="$section-type != 'definitions'">
       <xsl:element name="{$section-type}">
         <xsl:if test="$section-type='section'">
-          <title><xsl:value-of select="span"/></title>
+          <!-- if the title is '-', then no title. if the title starts with
+          '*', then add a 'nonumber' attribute.-->
+          <xsl:if test="span != '-'">
+            <xsl:attribute name="title">
+              <xsl:choose>
+                <xsl:when test="starts-with(span, '*')">
+                  <xsl:value-of select="substring(span, 2)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="span"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:attribute>
+            <xsl:if test="starts-with(span, '*')">
+              <xsl:attribute name="nonumber"/>
+            </xsl:if>
+          </xsl:if>
         </xsl:if>
         <xsl:for-each select="following-sibling::p[preceding-sibling::h1[1] = $header]">
 	      <xsl:if test="span != ''">
