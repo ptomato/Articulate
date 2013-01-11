@@ -158,6 +158,19 @@
 </xsl:text>
 </xsl:template>
 
+<xsl:template match="table">
+  <xsl:text>\begin{table}
+  \centering
+  \begin{tabular}{c}
+  \end{tabular}
+  \label{</xsl:text>
+  <xsl:value-of select="label"/>
+  <xsl:text>}
+\end{table}
+
+</xsl:text>
+</xsl:template> <!-- table -->
+
 <xsl:template match="displaymath">
   <xsl:text>\begin{equation}\label{</xsl:text>
   <xsl:value-of select="label"/>

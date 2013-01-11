@@ -167,6 +167,15 @@ Or is there a way to do it from within the XSLT code? -->
         </math>
       </displaymath>
     </xsl:when>
+    <!-- #Table is a table -->
+    <xsl:when test="starts-with($text,'#Table')">
+      <table>
+        <label><xsl:call-template name="label-name">
+          <xsl:with-param name="text" select="normalize-space(substring-after(substring-before($text,'.'),'#Table'))"/>
+        </xsl:call-template></label>
+        <!-- TODO: table code-->
+      </table>
+    </xsl:when>
     <!-- Anything else is a regular paragraph -->
     <xsl:otherwise>
       <p><xsl:apply-templates mode="paragraph"/></p>
