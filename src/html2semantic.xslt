@@ -82,7 +82,23 @@ Or is there a way to do it from within the XSLT code? -->
     <xsl:if test="$section-type != 'definitions'">
       <xsl:element name="{$section-type}">
         <xsl:if test="$section-type='section'">
-          <title><xsl:value-of select="span"/></title>
+          <!-- if the title is '-', then no title. if the title starts with
+          '*', then add a 'nonumber' attribute.-->
+          <xsl:if test="span != '-'">
+            <xsl:attribute name="title">
+              <xsl:choose>
+                <xsl:when test="starts-with(span, '*')">
+                  <xsl:value-of select="substring(span, 2)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="span"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:attribute>
+            <xsl:if test="starts-with(span, '*')">
+              <xsl:attribute name="nonumber"/>
+            </xsl:if>
+          </xsl:if>
         </xsl:if>
         <xsl:for-each select="following-sibling::p[preceding-sibling::h1[1] = $header]">
 	      <xsl:if test="span != ''">
@@ -151,6 +167,15 @@ Or is there a way to do it from within the XSLT code? -->
         </math>
       </displaymath>
     </xsl:when>
+    <!-- #Table is a table -->
+    <xsl:when test="starts-with($text,'#Table')">
+      <table>
+        <label><xsl:call-template name="label-name">
+          <xsl:with-param name="text" select="normalize-space(substring-after(substring-before($text,'.'),'#Table'))"/>
+        </xsl:call-template></label>
+        <!-- TODO: table code-->
+      </table>
+    </xsl:when>
     <!-- Anything else is a regular paragraph -->
     <xsl:otherwise>
       <p><xsl:apply-templates mode="paragraph"/></p>
@@ -173,13 +198,24 @@ Or is there a way to do it from within the XSLT code? -->
   <!-- Only process math elements that are not preceded by another math element -->
   <xsl:choose>
     <xsl:when test="contains(@class,$italic-class)">
-      <xsl:if test="preceding-sibling::span[1][not(contains(@class,$italic-class))]">
-        <math><xsl:value-of select="text()"/>
-          <xsl:call-template name="continue-math">
-            <xsl:with-param name="next" select="following-sibling::span[1]"/>
-          </xsl:call-template>
-        </math>
-      </xsl:if>
+      <xsl:choose>
+        <!-- Heuristic: if italic string is more than two characters long and
+        contains only letters and spaces, then it is meant to be emphasized
+        instead of math -->
+        <xsl:when test="string-length(text()) > 2 and translate(text(), 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ', '') = ''">
+          <emphasis><xsl:value-of select="text()"/></emphasis>
+        </xsl:when>
+        <!-- Otherwise, it is math -->
+        <xsl:otherwise>
+          <xsl:if test="preceding-sibling::span[1][not(contains(@class,$italic-class))]">
+            <math><xsl:value-of select="text()"/>
+              <xsl:call-template name="continue-math">
+                <xsl:with-param name="next" select="following-sibling::span[1]"/>
+              </xsl:call-template>
+            </math>
+          </xsl:if>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:when>
     <!-- Not a math element -->
     <xsl:otherwise>

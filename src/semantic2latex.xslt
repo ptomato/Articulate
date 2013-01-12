@@ -94,14 +94,17 @@
 </xsl:text>
 </xsl:template>
 
-<xsl:template match="/document/body/section/title">
-  <xsl:if test="text() != '-'">
-    <xsl:text>\section{</xsl:text>
-    <xsl:value-of select="."/>
+<xsl:template match="/document/body/section">
+  <xsl:if test="@title">
+    <xsl:text>\section</xsl:text>
+    <xsl:if test="@nonumber"><xsl:text>*</xsl:text></xsl:if>
+    <xsl:text>{</xsl:text>
+    <xsl:value-of select="@title"/>
     <xsl:text>}
 
 </xsl:text>
   </xsl:if>
+  <xsl:apply-templates/>
 </xsl:template>
 
 <xsl:template match="/document/body/bibliography">
@@ -155,6 +158,19 @@
 </xsl:text>
 </xsl:template>
 
+<xsl:template match="table">
+  <xsl:text>\begin{table}
+  \centering
+  \begin{tabular}{c}
+  \end{tabular}
+  \label{</xsl:text>
+  <xsl:value-of select="label"/>
+  <xsl:text>}
+\end{table}
+
+</xsl:text>
+</xsl:template> <!-- table -->
+
 <xsl:template match="displaymath">
   <xsl:text>\begin{equation}\label{</xsl:text>
   <xsl:value-of select="label"/>
@@ -184,6 +200,12 @@
 <xsl:template mode="inline" match="ref">
   <xsl:text>\ref{</xsl:text>
   <xsl:value-of select="@label"/>
+  <xsl:text>}</xsl:text>
+</xsl:template>
+
+<xsl:template mode="inline" match="emphasis">
+  <xsl:text>\emph{</xsl:text>
+  <xsl:value-of select="."/>
   <xsl:text>}</xsl:text>
 </xsl:template>
 
