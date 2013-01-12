@@ -11,7 +11,7 @@ articulate_SOURCES = \
 	latextransform.vala \
 	utf8transform.vala
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-include config.h \
 	$(ARTICULATE_CFLAGS) \
 	$(CURL_CFLAGS) \
