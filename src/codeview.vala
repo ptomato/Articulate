@@ -67,7 +67,7 @@ public class CodeView : VBox
 	}
 	public string xml_code { 
 		get {
-			return code[Repr.RAW_HTML];
+			return code[Repr.SEMANTIC_XML];
 		}
 		set {
 			code[Repr.SEMANTIC_XML] = value;
