@@ -5,11 +5,11 @@ public class GoogleDocs : DocumentsService {
 
 	public string? username { get; set; default = null; }
 	
-	private unowned string? _password;
-	public unowned string? password { 
+	private void* _password;
+	public string? password {
 		set {
 			if(_password != null)
-				GnomeKeyring.memory_free((void *)_password);
+				GnomeKeyring.memory_free(_password);
 			if(value != null)
 				_password = GnomeKeyring.memory_strdup(value);
 			else
@@ -26,7 +26,7 @@ public class GoogleDocs : DocumentsService {
 		requires(can_login())
 	{
 		var login_authorizer = new ClientLoginAuthorizer("BetaChi-TestProgram-0.1", typeof(DocumentsService));
-		login_authorizer.authenticate(username, _password, null);
+		login_authorizer.authenticate(username, (string)_password, null);
 
 		this.authorizer = login_authorizer;
 	}
@@ -48,7 +48,7 @@ public class GoogleDocs : DocumentsService {
 	public void find_password_in_keyring()
 		throws IOError
 	{
-		unowned string _temp_password;
+		string _temp_password;
 		password = null;
 		
 		// See if a password is stored in the keyring
@@ -81,7 +81,7 @@ public class GoogleDocs : DocumentsService {
 		var res = GnomeKeyring.store_password_sync(GnomeKeyring.NETWORK_PASSWORD,
 			GnomeKeyring.DEFAULT,
 			"Google Account password for Articulate",
-			_password,
+			(string)_password,
 			"user", username,
 			"server", "docs.google.com",
 			"protocol", "gdata",
@@ -99,7 +99,7 @@ public class GoogleDocs : DocumentsService {
 
 	~GoogleDocs() {
 		if(_password != null)
-			GnomeKeyring.memory_free((void *)_password);
+			GnomeKeyring.memory_free(_password);
 	}
 }
 	
