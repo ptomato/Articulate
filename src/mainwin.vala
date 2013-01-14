@@ -133,6 +133,46 @@ public class MainWin : Window
 		}
 	}
 
+	[CCode (instance_pos = -1)]
+	public void on_save_intermediate(Gtk.Action action) {
+		// Save the HTML code and semantic XML to a directory
+		var dialog = new FileChooserDialog("Choose a file to save to", this, FileChooserAction.SAVE, Stock.CANCEL, ResponseType.CANCEL, Stock.OK, ResponseType.OK);
+		var filter = new FileFilter();
+		filter.set_name("HTML files (*.html)");
+		filter.add_pattern("*.html");
+		dialog.add_filter(filter);
+		dialog.do_overwrite_confirmation = true;
+		var response = dialog.run();
+		dialog.hide();
+		if(response != ResponseType.OK)
+			return;
+
+		// Save HTML code
+		var htmlfile = dialog.get_file();
+		try {
+			htmlfile.replace_contents(code_view.html_code.data, null, false, FileCreateFlags.NONE, null);
+		} catch(Error e) {
+			error_dialog("There was an error saving the HTML file.", @"Error message: <b>\"$(e.message)\"</b>");
+			return;
+		}
+
+		// Pretty-print HTML code
+		try {
+			Process.spawn_command_line_sync("./html-prettify.py " + htmlfile.get_path());
+		} catch(Error e) {
+			error_dialog("There was an error pretty-printing the HTML file.", @"Error message: <b>\"$(e.message)\"</b>");
+		}
+
+		// Save semantic XML code
+		var xmlfile = File.parse_name(htmlfile.get_parse_name() + ".xml");
+		try {
+			xmlfile.replace_contents(code_view.xml_code.data, null, false, FileCreateFlags.NONE, null);
+		} catch(Error e) {
+			error_dialog("There was an error saving the XML file.", @"Error message: <b>\"$(e.message)\"</b>");
+			return;
+		}
+	}
+
 	public void on_quit() {
 		try {
 			var text = settings.to_data();
