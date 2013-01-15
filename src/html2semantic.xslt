@@ -242,6 +242,14 @@ Or is there a way to do it from within the XSLT code? -->
         </xsl:for-each>
       </footnote>
     </xsl:when>
+    <xsl:when test="starts-with($tag,'cmnt')">
+      <comment>
+        <xsl:attribute name="author">
+          <xsl:value-of select="//div[.//a[@name=$tag]]/p[1]/span"/>
+        </xsl:attribute>
+        <xsl:apply-templates mode="paragraph" select="//div[.//a[@name=$tag]]/p[position()!=1]"/>
+      </comment>
+    </xsl:when>
   </xsl:choose>
 </xsl:template>
 

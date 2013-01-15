@@ -240,6 +240,12 @@
   <xsl:text>}</xsl:text>
 </xsl:template>
 
+<xsl:template mode="inline" match="comment">
+  <xsl:text>\marginpar{</xsl:text>
+  <xsl:apply-templates mode="inline"/>
+  <xsl:text>}</xsl:text>
+</xsl:template>
+
 <!-- Templates for math mode -->
 
 <xsl:template mode="math" match="sup">
