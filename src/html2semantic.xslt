@@ -226,6 +226,25 @@ Or is there a way to do it from within the XSLT code? -->
   </xsl:choose>
 </xsl:template>
 
+<!-- Footnotes (and comments, soon): <sup><a> -->
+<xsl:template mode="paragraph" match="sup">
+  <!-- footnote tags start with "ftnt", comments with "cmnt" -->
+  <xsl:variable name="tag">
+    <xsl:value-of select="substring(a/@href,2)"/>
+  </xsl:variable>
+  <xsl:choose>
+    <xsl:when test="starts-with($tag,'ftnt')">
+      <footnote>
+        <xsl:for-each select="//div[.//a[@name=$tag]]/*">
+          <xsl:for-each select="*[name()!='a' or position()!=1]">
+            <xsl:apply-templates mode="paragraph"/>
+          </xsl:for-each>
+        </xsl:for-each>
+      </footnote>
+    </xsl:when>
+  </xsl:choose>
+</xsl:template>
+
 <xsl:template name="continue-math">
   <xsl:param name="next"/>
   <xsl:choose>

@@ -234,6 +234,12 @@
   <xsl:text>}</xsl:text>
 </xsl:template>
 
+<xsl:template mode="inline" match="footnote">
+  <xsl:text>\footnote{</xsl:text>
+  <xsl:apply-templates mode="inline"/>
+  <xsl:text>}</xsl:text>
+</xsl:template>
+
 <!-- Templates for math mode -->
 
 <xsl:template mode="math" match="sup">
