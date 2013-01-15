@@ -104,16 +104,25 @@ public class MainWin : Window
 		}
 
 		var parent = latexfile.get_parent();
+		bool dont_ask = false;
 		foreach(var entry in code_view.file_list.entries) {
 			var destfile = parent.get_child(entry.key + ".png");
-			if(destfile.query_exists()) {
+			if(!dont_ask && destfile.query_exists()) {
 				var pngdialog = new MessageDialog(this, DialogFlags.MODAL | DialogFlags.DESTROY_WITH_PARENT,
 					MessageType.QUESTION, ButtonsType.NONE,
 					"Are you sure you want to overwrite '%s'?", entry.key + ".png");
 				pngdialog.add_buttons(Stock.CANCEL, ResponseType.CANCEL, "Overwrite", ResponseType.OK);
 				pngdialog.secondary_text = "This will delete the previous file.";
+
+				var checkbox = new CheckButton.with_label("Don't ask me again, just overwrite");
+				checkbox.show();
+				(pngdialog.get_content_area() as Box).pack_end(checkbox);
+
 				var pngresponse = pngdialog.run();
-				pngdialog.hide();
+				pngdialog.destroy();
+
+				if(checkbox.active)
+					dont_ask = true;
 
 				if(pngresponse != ResponseType.OK)
 					continue;
