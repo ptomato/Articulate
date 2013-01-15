@@ -63,15 +63,25 @@ public class UTF8Transform
 		{ 0x2019, "'" }, // right single quote
 		{ 0x201C, "``" }, // left double quote
 		{ 0x201D, "''" }, // right double quote
+		{ 0x2032, "'" }, // prime
+		{ 0x2033, "''" }, // double prime
 		{ 0x205F, "\\:" }, // medium mathematical space (4/18 em)
 		{ 0x207A, "$^+$" }, // text mode, superscript plus
+		{ 0x2081, "_1" }, // subscript one
+		{ 0x2082, "_2" }, // subscript two
 
 		{ 0x210F, "\\hbar " },
+		{ 0x21D2, "\\Rightarrow " }, // rightwards double arrow
 
+		{ 0x2202, "\\partial " }, // partial differential
+		{ 0x220F, "\\prod " }, // n-ary product
 		{ 0x2212, "-" }, // math mode, minus sign
 		{ 0x221A, "\\sqrt " },
 		{ 0x221D, "\\propto " },
+		{ 0x221E, "\\infty" }, // infinity
 		{ 0x2248, "\\approx " },
+		{ 0x226A, "\\ll " }, // much less-than
+		{ 0x226B, "\\gg " }, // much greater-than
 		{ 0x22A5, "\\perp " }, // up tack
 
 		{ 0x23B7, "\\sqrt " }, // radical symbol bottom
