@@ -169,12 +169,12 @@ Or is there a way to do it from within the XSLT code? -->
     </xsl:when>
     <!-- #Table is a table -->
     <xsl:when test="starts-with($text,'#Table')">
-      <table>
+      <tablefloat>
         <label><xsl:call-template name="label-name">
           <xsl:with-param name="text" select="normalize-space(substring-after(substring-before($text,'.'),'#Table'))"/>
         </xsl:call-template></label>
-        <!-- TODO: table code-->
-      </table>
+        <xsl:apply-templates mode="table" select="following-sibling::table/*"/>
+      </tablefloat>
     </xsl:when>
     <!-- Anything else is a regular paragraph -->
     <xsl:otherwise>
@@ -275,6 +275,31 @@ Or is there a way to do it from within the XSLT code? -->
   </xsl:choose>
 </xsl:template>
 
+<!-- Table mode -->
+
+<xsl:template mode="table" match="tbody">
+  <table>
+    <xsl:attribute name="columns">
+      <xsl:call-template name="maximum">
+        <xsl:with-param name="sequence">
+          <xsl:for-each select="child::tr">
+            <xsl:value-of select="count(child::td)"/>,
+          </xsl:for-each>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:apply-templates mode="table"/>
+  </table>
+</xsl:template>
+
+<xsl:template mode="table" match="tr">
+  <row><xsl:apply-templates mode="table"/></row>
+</xsl:template>
+
+<xsl:template mode="table" match="td">
+  <cell><xsl:apply-templates mode="paragraph" select="p"/></cell>
+</xsl:template>
+
 <!-- Makes a figure or equation label out of text -->
 <xsl:template name="label-name">
   <xsl:param name="text"/>
@@ -282,6 +307,19 @@ Or is there a way to do it from within the XSLT code? -->
   <xsl:variable name="lc">abcdefghijklmnopqrstuvwxyz</xsl:variable>
   <xsl:variable name="uc">ABCDEFGHIJKLMNOPQRSTUVWXYZ</xsl:variable>
   <xsl:value-of select="translate(translate($text,$uc,$lc),' ','-')"/>
+</xsl:template>
+
+<!-- Well-known idiom for maximum function:
+http://stackoverflow.com/questions/5379650/using-max-in-a-variable-in-xslt-1-0
+-->
+<xsl:template name="maximum">
+  <xsl:param name="sequence"/>
+  <xsl:for-each select="str:tokenize($sequence,',')">
+    <xsl:sort select="." data-type="number" order="descending"/>
+    <xsl:if test="position()=1">
+        <xsl:value-of select="."/>
+    </xsl:if>
+  </xsl:for-each>
 </xsl:template>
 
 </xsl:stylesheet>

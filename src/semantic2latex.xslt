@@ -158,18 +158,43 @@
 </xsl:text>
 </xsl:template>
 
-<xsl:template match="table">
+<xsl:template match="tablefloat">
   <xsl:text>\begin{table}
   \centering
-  \begin{tabular}{c}
-  \end{tabular}
-  \label{</xsl:text>
+</xsl:text>
+  <xsl:apply-templates select="table"/>
+  <xsl:text>  \label{</xsl:text>
   <xsl:value-of select="label"/>
   <xsl:text>}
 \end{table}
 
 </xsl:text>
-</xsl:template> <!-- table -->
+</xsl:template> <!-- tablefloat -->
+
+<xsl:template match="table">
+  <xsl:text>  \begin{tabular}{</xsl:text>
+  <xsl:call-template name="repeat-string">
+    <xsl:with-param name="string" select="'l'"/>
+    <xsl:with-param name="times" select="@columns"/>
+  </xsl:call-template>
+  <xsl:text>}
+</xsl:text>
+  <xsl:apply-templates/>
+  <xsl:text>  \end{tabular}
+</xsl:text>
+</xsl:template>
+
+<xsl:template match="row">
+  <xsl:apply-templates/>
+  <xsl:text>\\
+</xsl:text>
+</xsl:template>
+
+<xsl:template match="cell">
+  <xsl:text>    </xsl:text>
+  <xsl:apply-templates mode="inline"/>
+  <xsl:text> &amp; </xsl:text>
+</xsl:template>
 
 <xsl:template match="displaymath">
   <xsl:text>\begin{equation}\label{</xsl:text>
@@ -227,6 +252,22 @@
   <xsl:text>\unit{</xsl:text>
   <xsl:apply-templates mode="math"/>
   <xsl:text>}</xsl:text>
+</xsl:template>
+
+<!-- Helper templates -->
+
+<!-- http://stackoverflow.com/questions/3228270/transform-an-integer-value-to-a-repeated-character -->
+<xsl:template name="repeat-string">
+  <xsl:param name="string" select="''"/>
+  <xsl:param name="times" select="1"/>
+
+  <xsl:if test="number($times) &gt; 0">
+    <xsl:value-of select="$string"/>
+    <xsl:call-template name="repeat-string">
+      <xsl:with-param name="string" select="$string"/>
+      <xsl:with-param name="times" select="$times - 1"/>
+    </xsl:call-template>
+  </xsl:if>
 </xsl:template>
 
 </xsl:stylesheet>
