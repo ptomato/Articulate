@@ -211,7 +211,13 @@
 <!-- Templates for inline mode -->
 
 <xsl:template mode="inline" match="cite">
-  <xsl:text>\cite{</xsl:text>
+  <xsl:text>\cite</xsl:text>
+  <xsl:if test="@annotation">
+    <xsl:text>[</xsl:text>
+    <xsl:value-of select="@annotation"/>
+    <xsl:text>]</xsl:text>
+  </xsl:if>
+  <xsl:text>{</xsl:text>
   <xsl:value-of select="."/>
   <xsl:text>}</xsl:text>
 </xsl:template>

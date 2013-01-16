@@ -285,12 +285,28 @@ Or is there a way to do it from within the XSLT code? -->
 <xsl:template name="text">
   <xsl:param name="text"/>
   <xsl:choose>
-    <!-- [Author2012] => <cite>Author2012</cite> -->
+    <!-- [Author2012{p.12}] => <cite annotation="p.12">Author2012</cite> -->
     <xsl:when test="contains($text,'[') and contains(substring-after($text,'['),']')">
       <xsl:call-template name="text">
         <xsl:with-param name="text" select="substring-before($text,'[')"/>
       </xsl:call-template>
-      <cite><xsl:value-of select="substring-after(substring-before($text,']'),'[')"/></cite>
+      <cite>
+        <xsl:variable name="citetext" select="substring-after(substring-before($text,']'),'[')"/>
+        <xsl:choose>
+          <xsl:when test="contains($citetext,'{') and contains(substring-after($citetext,'{'),'}')">
+            <!-- annotation ("p.12") -->
+            <xsl:attribute name="annotation">
+              <xsl:value-of select="substring-before(substring-after($citetext,'{'),'}')"/>
+            </xsl:attribute>
+            <!-- cite key-->
+            <xsl:value-of select="substring-before($citetext,'{')"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- just cite key -->
+            <xsl:value-of select="$citetext"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </cite>
       <xsl:call-template name="text">
         <xsl:with-param name="text" select="substring-after($text,']')"/>
       </xsl:call-template>
