@@ -9,11 +9,12 @@ AM_SILENT_RULES([yes])
 
 AC_PROG_CC
 AC_PROG_CC_STDC
+AC_ARG_VAR([VALAC])  dnl So that it can be manually specified
 AM_PROG_VALAC([0.17.2])
 AC_PROG_INSTALL
 IT_PROG_INTLTOOL([0.35])
 
-ARTICULATE_PACKAGES="--pkg gtk+-3.0 --pkg gio-2.0 --pkg gmodule-2.0 --pkg gtksourceview-3.0 --pkg gnome-keyring-1-mod --pkg libgdata --pkg libxslt --pkg gee-0.8 --pkg libcurl --pkg posix"
+ARTICULATE_PACKAGES="--pkg gtk+-3.0 --pkg gio-2.0 --pkg gmodule-2.0 --pkg gtksourceview-3.0 --pkg gnome-keyring-1-mod --pkg libgdata-mod --pkg libxslt --pkg gee-0.8 --pkg libcurl --pkg posix"
 PKG_CHECK_MODULES(ARTICULATE, [
 	gtk+-3.0
 	gio-2.0
