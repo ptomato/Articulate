@@ -193,7 +193,9 @@
 <xsl:template match="cell">
   <xsl:text>    </xsl:text>
   <xsl:apply-templates mode="inline"/>
-  <xsl:text> &amp; </xsl:text>
+  <xsl:if test="position() != ancestor::table/@columns">
+    <xsl:text> &amp; </xsl:text>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="displaymath">
