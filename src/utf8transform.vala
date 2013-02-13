@@ -13,6 +13,7 @@ public class UTF8Transform
 		// HTML. Just use regular LaTeX backslash-space in your source document.
 		{ 0x00B1, "\\pm " },
 		{ 0x00BD, "\\mbox{$\\frac{1}{2}$}" }, // vulgar fraction one-half
+		{ 0x00D7, "\\times " }, // multiplication sign
 		{ 0x00E9, "\\'{e}" }, // latin small letter e with acute
 
 		{ 0x0393, "\\Gamma " },
@@ -69,8 +70,9 @@ public class UTF8Transform
 		{ 0x2033, "''" }, // double prime
 		{ 0x205F, "\\:" }, // medium mathematical space (4/18 em)
 		{ 0x207A, "$^+$" }, // text mode, superscript plus
-		{ 0x2081, "_1" }, // subscript one
-		{ 0x2082, "_2" }, // subscript two
+		{ 0x2081, "$_1$" }, // text mode, subscript one
+		{ 0x2082, "$_2$" }, // text mode, subscript two
+		{ 0x2083, "$_3$" }, // text mode, subscript three
 
 		{ 0x210F, "\\hbar " },
 		{ 0x21D2, "\\Rightarrow " }, // rightwards double arrow
