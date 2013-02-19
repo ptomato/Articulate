@@ -8,9 +8,10 @@ public class UTF8Transform
 	}
 	private static const transform[] table = {
 		{ 0x0025, "\\%" },
-		{ 0x00A0, "~" }, // non-breaking space
+		{ 0x00A0, " " }, // non-breaking space
 		// Unfortunately, Google Docs inserts spurious &nbsp;s in the downloaded
 		// HTML. Just use regular LaTeX backslash-space in your source document.
+		{ 0x00B0, "\\mbox{\\textdegree}" }, // degree sign
 		{ 0x00B1, "\\pm " },
 		{ 0x00BD, "\\mbox{$\\frac{1}{2}$}" }, // vulgar fraction one-half
 		{ 0x00D7, "\\times " }, // multiplication sign
@@ -73,6 +74,7 @@ public class UTF8Transform
 		{ 0x2081, "$_1$" }, // text mode, subscript one
 		{ 0x2082, "$_2$" }, // text mode, subscript two
 		{ 0x2083, "$_3$" }, // text mode, subscript three
+		{ 0x2084, "$_4$" }, // text mode, subscript four
 
 		{ 0x210F, "\\hbar " },
 		{ 0x21D2, "\\Rightarrow " }, // rightwards double arrow
