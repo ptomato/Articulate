@@ -77,10 +77,12 @@ public class UTF8Transform
 		{ 0x2084, "$_4$" }, // text mode, subscript four
 
 		{ 0x210F, "\\hbar " },
-		{ 0x21D2, "\\Rightarrow " }, // rightwards double arrow
+		{ 0x2192, "\\to " }, // rightwards arrow
+		{ 0x21D2, "\\implies " }, // rightwards double arrow
 
 		{ 0x2202, "\\partial " }, // partial differential
 		{ 0x220F, "\\prod " }, // n-ary product
+		{ 0x2211, "\\sum " }, // n-ary summation
 		{ 0x2212, "-" }, // math mode, minus sign
 		{ 0x221A, "\\sqrt " },
 		{ 0x221D, "\\propto " },
@@ -92,6 +94,10 @@ public class UTF8Transform
 		{ 0x22A5, "\\perp " }, // up tack
 
 		{ 0x23B7, "\\sqrt " }, // radical symbol bottom
+
+		// Use ornamental delimiters for paired LaTeX versions?
+		{ 0x2768, "\\left(" }, // medium left parenthesis ornament
+		{ 0x2769, "\\right)" }, // medium right parenthesis ornament
 
 		// Use Unicode full-width delimiters for paired LaTeX versions?
 		{ 0xFF08, "\\left(" },
