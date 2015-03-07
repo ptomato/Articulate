@@ -1,7 +1,7 @@
-bin_PROGRAMS = articulate
+bin_PROGRAMS = articulate articulate-gui
 noinst_LTLIBRARIES = libtransforms.la
 
-articulate_SOURCES = \
+articulate_gui_SOURCES = \
 	main.vala \
 	mainwin.vala \
 	passworddialog.vala \
@@ -9,10 +9,31 @@ articulate_SOURCES = \
 	googledocs.vala \
 	codeview.vala \
 	$(NULL)
+articulate_gui_CPPFLAGS = \
+	-include config.h \
+	$(ARTICULATE_GUI_CFLAGS) \
+	$(CURL_CFLAGS) \
+	-DLOCALEDIR=\""$(localedir)"\" \
+	-DPKGDATADIR=\""$(pkgdatadir)"\" \
+	-DPKGLIBDIR=\""$(pkglibdir)"\" \
+	$(NULL)
+articulate_gui_VALAFLAGS = \
+	--vapidir=$(srcdir)/../vapi \
+	--vapidir=$(builddir) \
+	--pkg config \
+	--pkg Transforms \
+	@ARTICULATE_GUI_PACKAGES@ \
+	$(NULL)
+articulate_gui_LDADD = \
+	libtransforms.la \
+	$(ARTICULATE_GUI_LIBS) \
+	$(CURL_LIBS) \
+	$(NULL)
+
+articulate_SOURCES = articulate.vala
 articulate_CPPFLAGS = \
 	-include config.h \
 	$(ARTICULATE_CFLAGS) \
-	$(CURL_CFLAGS) \
 	-DLOCALEDIR=\""$(localedir)"\" \
 	-DPKGDATADIR=\""$(pkgdatadir)"\" \
 	-DPKGLIBDIR=\""$(pkglibdir)"\" \
@@ -27,7 +48,6 @@ articulate_VALAFLAGS = \
 articulate_LDADD = \
 	libtransforms.la \
 	$(ARTICULATE_LIBS) \
-	$(CURL_LIBS) \
 	$(NULL)
 
 libtransforms_la_SOURCES = \

@@ -9,5 +9,6 @@ Makefile.in
 *.la
 
 articulate
+articulate-gui
 Transforms.vapi
 transforms.h
