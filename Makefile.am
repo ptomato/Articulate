@@ -4,5 +4,6 @@ SUBDIRS = \
 	data \
 	src \
 	vapi \
-	po
+	po \
+	$(NULL)
 

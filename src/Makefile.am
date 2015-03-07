@@ -15,17 +15,20 @@ articulate_CPPFLAGS = \
 	$(CURL_CFLAGS) \
 	-DLOCALEDIR=\""$(localedir)"\" \
 	-DPKGDATADIR=\""$(pkgdatadir)"\" \
-	-DPKGLIBDIR=\""$(pkglibdir)"\"
+	-DPKGLIBDIR=\""$(pkglibdir)"\" \
+	$(NULL)
 articulate_VALAFLAGS = \
 	--vapidir=$(srcdir)/../vapi \
 	--vapidir=$(builddir) \
 	--pkg config \
 	--pkg Transforms \
-	@ARTICULATE_PACKAGES@
+	@ARTICULATE_PACKAGES@ \
+	$(NULL)
 articulate_LDADD = \
 	libtransforms.la \
 	$(ARTICULATE_LIBS) \
-	$(CURL_LIBS)
+	$(CURL_LIBS) \
+	$(NULL)
 
 libtransforms_la_SOURCES = \
 	semantictransform.vala \
@@ -52,4 +55,5 @@ EXTRA_DIST = mainwin.ui
 	
 CLEANFILES = \
 	main.c \
-	manwin.c
+	manwin.c \
+	$(NULL)
