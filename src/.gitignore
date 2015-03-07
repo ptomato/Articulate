@@ -1,7 +1,13 @@
 Makefile
 Makefile.in
+.libs
 .deps
 *.stamp
 *.c
 *.o
+*.lo
+*.la
+
 articulate
+Transforms.vapi
+transforms.h

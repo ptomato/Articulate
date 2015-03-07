@@ -1,4 +1,5 @@
 bin_PROGRAMS = articulate
+noinst_LTLIBRARIES = libtransforms.la
 
 articulate_SOURCES = \
 	main.vala \
@@ -7,28 +8,45 @@ articulate_SOURCES = \
 	optionsdialog.vala \
 	googledocs.vala \
 	codeview.vala \
-	semantictransform.vala \
-	latextransform.vala \
-	utf8transform.vala
-
-AM_CPPFLAGS = \
+	$(NULL)
+articulate_CPPFLAGS = \
 	-include config.h \
 	$(ARTICULATE_CFLAGS) \
 	$(CURL_CFLAGS) \
 	-DLOCALEDIR=\""$(localedir)"\" \
 	-DPKGDATADIR=\""$(pkgdatadir)"\" \
 	-DPKGLIBDIR=\""$(pkglibdir)"\"
+articulate_VALAFLAGS = \
+	--vapidir=$(srcdir)/../vapi \
+	--vapidir=$(builddir) \
+	--pkg config \
+	--pkg Transforms \
+	@ARTICULATE_PACKAGES@
+articulate_LDADD = \
+	libtransforms.la \
+	$(ARTICULATE_LIBS) \
+	$(CURL_LIBS)
+
+libtransforms_la_SOURCES = \
+	semantictransform.vala \
+	latextransform.vala \
+	utf8transform.vala \
+	$(NULL)
+libtransforms_la_CPPFLAGS = \
+	$(TRANSFORMS_CFLAGS) \
+	$(NULL)
+libtransforms_la_VALAFLAGS = \
+	--vapidir=$(srcdir)/../vapi \
+	--library Transforms \
+	-H transforms.h \
+	@TRANSFORMS_PACKAGES@ \
+	$(NULL)
+libtransforms_la_LIBADD = \
+	$(TRANSFORMS_LIBS) \
+	$(NULL)
 
 # Disable warnings in the C compiler, since the Vala-generated C produces lots
 AM_CFLAGS = -w
-
-AM_VALAFLAGS = \
-	--vapidir=$(srcdir)/../vapi --pkg config \
-	@ARTICULATE_PACKAGES@
-
-articulate_LDADD = \
-	$(ARTICULATE_LIBS) \
-	$(CURL_LIBS)
 
 EXTRA_DIST = mainwin.ui
 	

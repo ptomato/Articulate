@@ -13,8 +13,9 @@ AC_ARG_VAR([VALAC])  dnl So that it can be manually specified
 AM_PROG_VALAC([0.17.2])
 AC_PROG_INSTALL
 IT_PROG_INTLTOOL([0.35])
+LT_INIT
 
-ARTICULATE_PACKAGES="--pkg gtk+-3.0 --pkg gio-2.0 --pkg gmodule-2.0 --pkg gtksourceview-3.0 --pkg gnome-keyring-1-mod --pkg libgdata-mod --pkg libxslt --pkg gee-0.8 --pkg libcurl --pkg posix"
+ARTICULATE_PACKAGES="--pkg gtk+-3.0 --pkg gio-2.0 --pkg gmodule-2.0 --pkg gtksourceview-3.0 --pkg gnome-keyring-1-mod --pkg libgdata-mod --pkg gee-0.8 --pkg libcurl --pkg posix"
 PKG_CHECK_MODULES(ARTICULATE, [
 	gtk+-3.0
 	gio-2.0
@@ -23,11 +24,19 @@ PKG_CHECK_MODULES(ARTICULATE, [
 	gee-0.8
 	gnome-keyring-1 >= 2.22 dnl Not in ARTICULATE_PACKAGES, as we provide our own non-buggy VAPI
 	libgdata  dnl also not in PACKAGES
+])
+TRANSFORMS_PACKAGES="--pkg gio-2.0 --pkg libxslt --pkg gee-0.8"
+PKG_CHECK_MODULES(TRANSFORMS, [
+	gio-2.0
+	gee-0.8
 	libxslt libexslt  dnl doesn't even have a VAPI, we provide our own
 ])
 AC_SUBST(ARTICULATE_CFLAGS)
 AC_SUBST(ARTICULATE_LIBS)
 AC_SUBST(ARTICULATE_PACKAGES)
+AC_SUBST(TRANSFORMS_CFLAGS)
+AC_SUBST(TRANSFORMS_LIBS)
+AC_SUBST(TRANSFORMS_PACKAGES)
 PKG_CHECK_MODULES(CURL, [libcurl], [], dnl we provide our own VAPI
 [
 	# Try this if libcurl.pc wasn't found
